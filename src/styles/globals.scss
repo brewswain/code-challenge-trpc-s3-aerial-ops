@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$background-color: hsl(60, 1%, 85%);
+$primary-text: hsl(0, 0%, 0%);
+
+// Useful for theming/darkmode support
+body {
+  background-color: var($background-color);
+  color: var($primary-text);
+}
