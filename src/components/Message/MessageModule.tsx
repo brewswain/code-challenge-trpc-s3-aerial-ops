@@ -3,17 +3,22 @@ import ImageBox from "./ImageBox";
 import MessageText from "./MessageText";
 import MessageTimeStamp from "./MessageTimeStamp";
 
-const MessageModule = ({ message }: MessageProps) => {
-  console.log(message.message);
+interface MessageModuleProps {
+  message: MessageProps;
+  timestamp: string | null;
+}
+
+const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
   return (
-    // Replace Fragments with proper container div once styling is decided upon
-    <>
+    <div className="p-2">
+      <p className="flex justify-center">{timestamp && timestamp.toString()}</p>
       <MessageText />
       {message.message.image ? (
         <ImageBox imageUrl={message.message.image} />
       ) : null}
-      <MessageTimeStamp />
-    </>
+
+      <MessageTimeStamp createdAt={message.message.createdAt} />
+    </div>
   );
 };
 
