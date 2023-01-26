@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import UploadImageButton from "./UploadImageButton";
 
@@ -14,13 +14,13 @@ const ChatBar = () => {
   };
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  // Solution taken from Youtube
+
+  // Solution taken from youtube--if this breaks check out React's ref documentation:
+  // https://reactjs.org/docs/refs-and-the-dom.html
   const resizeInput = () => {
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "";
-      textAreaRef.current.style.height =
-        // textAreaRef.current.scrollHeight + "px";
-        `${textAreaRef.current.scrollHeight}px`;
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
     }
 
     console.log(textAreaRef.current?.scrollHeight);
@@ -29,9 +29,10 @@ const ChatBar = () => {
   const sendMessage = () => {
     setTextInput("");
   };
-  // prevent hitting Enter by itself from expanding textarea aka make it send like we expect it to
-  const onKeyDown = (event) => {
-    if (event.key === "Enter" && !event.altkey && !event.shiftKey) {
+
+  // prevent hitting Enter by itself from expanding textarea aka make message send like we expect it to
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && !event.altKey && !event.shiftKey) {
       event.preventDefault();
       sendMessage();
     }
