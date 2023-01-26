@@ -1,3 +1,5 @@
 import MessageModule from "./Message/MessageModule";
 
-export { MessageModule };
+import ChatBar from "./ChatBar/ChatBar";
+
+export { MessageModule, ChatBar };
