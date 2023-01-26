@@ -8,7 +8,7 @@ const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
-    <div className="bg-background">
+    <div className="h-[100vh]  bg-slate-500">
       <Messages />
     </div>
   );
