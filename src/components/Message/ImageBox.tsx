@@ -1,14 +1,15 @@
 import Image from "next/image";
 
-const ImageBox = () => {
+const ImageBox = ({ imageUrl }: string) => {
+  console.log(imageUrl);
   return (
     <>
       <Image
-        src="https://placekitten.com/300/300"
+        src={imageUrl}
         alt="placeholder image of kittens"
         // fill
-        width={300}
-        height={300}
+        width={200}
+        height={200}
       />
     </>
   );
