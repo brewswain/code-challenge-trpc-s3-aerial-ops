@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 const ImageBox = ({ imageUrl }: string) => {
-  console.log(imageUrl);
   return (
     <>
       <Image
