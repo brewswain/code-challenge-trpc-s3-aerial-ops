@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 
-import { MessageModule } from "../components";
+import { ChatBar, MessageModule } from "../components";
 
 import { api } from "../utils/api";
 
@@ -10,6 +10,7 @@ const Home: NextPage = () => {
   return (
     <>
       <MessageModule />
+      <ChatBar />
     </>
   );
 };
