@@ -1,6 +1,10 @@
 import Image from "next/image";
 
-const ImageBox = ({ imageUrl }: string) => {
+interface ImageBoxProps {
+  imageUrl: string;
+}
+
+const ImageBox = ({ imageUrl }: ImageBoxProps) => {
   return (
     <>
       <Image
