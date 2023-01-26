@@ -27,7 +27,9 @@
 
 ## Work Summary
 
-### Jan 26th, 2023 - 3:40PM
+### Jan 26th, 2023
+
+#### 3:40PM
 
 ---
 
