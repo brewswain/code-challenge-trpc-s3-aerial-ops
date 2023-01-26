@@ -1,8 +1,6 @@
-const ChatBar = () => {
-  const handleImageUpload = () => {
-    alert("Image uploaded");
-  };
+import UploadImageButton from "./UploadImageButton";
 
+const ChatBar = () => {
   const handleSubmit = () => {
     alert("Message sent");
   };
@@ -10,7 +8,7 @@ const ChatBar = () => {
   return (
     <div>
       <input type="text" placeholder="Enter Message..." />
-      <button onClick={handleImageUpload}>image upload placeholder</button>
+      <UploadImageButton />
       <button onClick={handleSubmit}>Send</button>
     </div>
   );
