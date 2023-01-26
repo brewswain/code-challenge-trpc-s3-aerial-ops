@@ -2,8 +2,10 @@
 
 ## MVP Goals
 
+- [x] Learn TRPC and Zod (should add time to project; that's fine, ramp up should always be considered with deliverable timelines)
+- [x] Create basic visual mockup of chat -- Not styled
+- [ ] Begin working on trpc for endpoint functionality
 - [ ] Create simple Chat room, no authentication
-- [ ] Learn TRPC and Zod (should add time to project; that's fine, ramp up should always be considered with deliverable timelines)
 - [ ] Learn S3 (Should be simple, Experience with GCP and firebase will help out, so don't expect too much time investment outside of configuring to use **pre-signed Urls**)
 - [ ] Deploy on Vercel
 - [ ] Use Mongo
