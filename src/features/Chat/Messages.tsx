@@ -27,7 +27,7 @@ const Messages = () => {
   };
 
   return (
-    <div className="flex w-[50%] flex-col bg-white p-10">
+    <div className="flex w-[50%] flex-col overflow-auto bg-white p-10 ">
       {testMessages.map((testMessage: MessageProps, index) => {
         const macroTimestamp = getTimestamp(testMessages, index);
         return (
