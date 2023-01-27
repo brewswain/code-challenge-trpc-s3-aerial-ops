@@ -7,7 +7,7 @@ export const msgRouter = createTRPCRouter({
   list: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.message.findMany({
       orderBy: {
-        createdAt: "desc",
+        createdAt: "asc",
       },
     });
   }),
