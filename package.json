@@ -16,12 +16,17 @@
     "@trpc/next": "^10.8.1",
     "@trpc/react-query": "^10.8.1",
     "@trpc/server": "^10.8.1",
+    "@types/node-fetch": "^2.6.2",
+    "@types/ws": "^8.5.4",
     "next": "13.1.2",
+    "next-auth": "^4.18.10",
+    "node-fetch": "^2.6.8",
     "node-sass": "^8.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sass": "^1.57.1",
     "superjson": "1.9.1",
+    "ws": "^8.12.0",
     "zod": "^3.20.2"
   },
   "devDependencies": {
