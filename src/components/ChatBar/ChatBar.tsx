@@ -2,8 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 
 import UploadImageButton from "./UploadImageButton";
 
+import { api } from "../../utils/api";
+
 const ChatBar = () => {
   const [textInput, setTextInput] = useState<string>("");
+
+  const sendMessageMutation = api.msg.add.useMutation();
 
   const handleChange = (inputMessage: string) => {
     setTextInput(inputMessage);
@@ -27,6 +31,11 @@ const ChatBar = () => {
   };
 
   const sendMessage = () => {
+    if (textInput) {
+      sendMessageMutation.mutate({
+        messageText: textInput,
+      });
+    }
     setTextInput("");
   };
 
