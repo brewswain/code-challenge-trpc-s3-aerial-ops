@@ -34,3 +34,9 @@
 ---
 
 So far, I spent most of today just doing some research on trpc and zod, including messing around with our built in API routes. Also did some intermittent work on overall UI and project structure using some mock data to ensure my flow is working as expected--Maybe 2.5 hours of actual coding done so far. Next goal is to learn and use Prisma to create some schemas--While I don't have experience with Prisma, it seems well-documented + this isn't anything new to me, i'll just have to learn syntax.
+
+### Jan 27th, 2023
+
+---
+
+Today's work is heavily based on our actual functionality -- tRPC and Prisma. So far, I created the requested routes, and will begin testing them once I wire up the frontend.
