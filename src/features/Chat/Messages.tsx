@@ -6,7 +6,6 @@ import { api } from "../../utils/api";
 
 const Messages = () => {
   const messages = api.msg.list.useQuery();
-  console.log(messages);
 
   const getTimestamp = (messages: Message[], index: number) => {
     const currentDate: Date = messages[index]!.createdAt;
@@ -28,6 +27,15 @@ const Messages = () => {
       year: "numeric",
     }).format(currentDate);
   };
+
+  if (messages.isLoading || messages.error) {
+    // Style loading text/replace with skeleton
+    return (
+      <div>
+        <p>{messages.isLoading ? "Loading" : "Error"}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-[50%] flex-col overflow-auto bg-white p-10 ">
