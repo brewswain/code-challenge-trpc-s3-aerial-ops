@@ -1,7 +1,6 @@
 import type { Message } from "@prisma/client";
 
 import ImageBox from "./ImageBox";
-import MessageText from "./MessageText";
 import MessageTimeStamp from "./MessageTimeStamp";
 
 interface MessageModuleProps {
