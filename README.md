@@ -4,11 +4,11 @@
 
 - [x] Learn TRPC and Zod to a usable level (should add time to project; that's fine, ramp up should always be considered with deliverable timelines)
 - [x] Create basic visual mockup of chat -- Not styled
-- [ ] Begin working on trpc for endpoint functionality
+- [x] Begin working on trpc for endpoint functionality
+- [x] Use Mongo
 - [ ] Create simple Chat room, no authentication
 - [ ] Learn S3 (Should be simple, Experience with GCP and firebase will help out, so don't expect too much time investment outside of configuring to use **pre-signed Urls**)
 - [ ] Deploy on Vercel
-- [ ] Use Mongo
 - [ ] Use S3
 
 ## Stretch Goals
@@ -37,6 +37,11 @@ So far, I spent most of today just doing some research on trpc and zod, includin
 
 ### Jan 27th, 2023
 
+Today's work is heavily based on our actual functionality -- tRPC and Prisma. So far, I created the requested routes, and will begin testing them once I wire up the frontend.
+
+#### 10:30AM
+
 ---
 
-Today's work is heavily based on our actual functionality -- tRPC and Prisma. So far, I created the requested routes, and will begin testing them once I wire up the frontend.
+tRPC endpoints to list and send new messages confirmed working with mongo. Websocket implementation started. Roughly 3 hours of work done so far, bringing total average tally up to 5.5 hours.
+Considering I'm learning a couple new technologies as well as implementing some websocket stuff,this is pretty on track with my expectations. Unfortunately however, it doesn't seem like I'll be able to get muc more work done today due to unforseen circumstances.
