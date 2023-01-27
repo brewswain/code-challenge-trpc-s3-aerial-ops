@@ -1,4 +1,5 @@
 import { getSession } from "next-auth/react";
+import type ws from "ws";
 
 import { prisma } from "../db";
 
@@ -7,7 +8,7 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NodeHTTPCreateContextFnOptions } from "@trpc/server/dist/adapters/node-http";
 import type { IncomingMessage } from "http";
 import type { Session } from "next-auth";
-import type ws from "ws";
+import { ee } from "../websockets/eventEmitter";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -21,6 +22,7 @@ export const createContextInner = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
+    ee,
   };
 };
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { observable } from "@trpc/server/observable";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -33,4 +34,18 @@ export const msgRouter = createTRPCRouter({
         },
       });
     }),
+
+  onSendMessage: publicProcedure.subscription(({ ctx }) => {
+    return observable<{ createdAt: Date }>((emit) => {
+      const onSendMessage = (data: { createdAt: Date }) => {
+        emit.next(data);
+      };
+
+      ctx.ee.on("sendMessage", onSendMessage);
+
+      return () => {
+        ctx.ee.off("sendMessage", onSendMessage);
+      };
+    });
+  }),
 });
