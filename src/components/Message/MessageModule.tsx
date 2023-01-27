@@ -1,10 +1,11 @@
-import type { MessageProps } from "../../data/testData";
+import type { Message } from "@prisma/client";
+
 import ImageBox from "./ImageBox";
 import MessageText from "./MessageText";
 import MessageTimeStamp from "./MessageTimeStamp";
 
 interface MessageModuleProps {
-  message: MessageProps;
+  message: Message;
   timestamp: string | null;
 }
 
@@ -13,11 +14,9 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
     <div className="p-2">
       <p className="flex justify-center">{timestamp && timestamp.toString()}</p>
       <MessageText />
-      {message.message.image ? (
-        <ImageBox imageUrl={message.message.image} />
-      ) : null}
+      {message.image ? <ImageBox imageUrl={message.image} /> : null}
 
-      <MessageTimeStamp createdAt={message.message.createdAt} />
+      <MessageTimeStamp createdAt={message.createdAt} />
     </div>
   );
 };

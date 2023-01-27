@@ -1,6 +1,4 @@
-import { timeStamp } from "console";
 import { useEffect, useState } from "react";
-import { MessageProps } from "../../data/testData";
 
 interface MessageTimeStampProps {
   createdAt: Date;

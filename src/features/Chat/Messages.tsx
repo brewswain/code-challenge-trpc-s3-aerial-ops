@@ -1,13 +1,16 @@
+import type { Message } from "@prisma/client";
+
 import { ChatBar, MessageModule } from "../../components";
 
-import type { MessageProps } from "../../data/testData";
-import { testMessages } from "../../data/testData";
+import { api } from "../../utils/api";
 
 const Messages = () => {
-  const getTimestamp = (messages: MessageProps[], index: number) => {
-    const currentDate: Date = messages[index]!.message.createdAt;
-    const previousDate =
-      index !== 0 ? messages[index - 1]!.message.createdAt : null;
+  const messages = api.msg.list.useQuery();
+  console.log(messages);
+
+  const getTimestamp = (messages: Message[], index: number) => {
+    const currentDate: Date = messages[index]!.createdAt;
+    const previousDate = index !== 0 ? messages[index - 1]!.createdAt : null;
 
     if (previousDate) {
       // TODO: nested if statements 👎🏽 Fix when done, check for timestamp library
@@ -28,16 +31,18 @@ const Messages = () => {
 
   return (
     <div className="flex w-[50%] flex-col overflow-auto bg-white p-10 ">
-      {testMessages.map((testMessage: MessageProps, index) => {
-        const macroTimestamp = getTimestamp(testMessages, index);
-        return (
-          <MessageModule
-            key={testMessage.message.id}
-            message={testMessage}
-            timestamp={macroTimestamp}
-          />
-        );
-      })}
+      {messages.data &&
+        messages.data.map((message: Message, index) => {
+          const macroTimestamp = getTimestamp(messages.data, index);
+
+          return (
+            <MessageModule
+              key={message.id}
+              message={message}
+              timestamp={macroTimestamp}
+            />
+          );
+        })}
       <ChatBar />
     </div>
   );
