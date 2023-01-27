@@ -13,7 +13,7 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
   return (
     <div className="p-2">
       <p className="flex justify-center">{timestamp && timestamp.toString()}</p>
-      <MessageText />
+      <p>{message.messageText}</p>
       {message.image ? <ImageBox imageUrl={message.image} /> : null}
 
       <MessageTimeStamp createdAt={message.createdAt} />
