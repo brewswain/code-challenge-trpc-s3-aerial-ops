@@ -15,4 +15,7 @@ model Message {
     image String?
     messageText String
     createdAt DateTime @default(now()) @db.Timestamp()
+
+    @@index([createdAt])
 }
+
