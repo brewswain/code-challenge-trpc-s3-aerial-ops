@@ -23,6 +23,8 @@ export const msgRouter = createTRPCRouter({
           image,
         },
       });
+
+      ctx.ee.emit("sendMessage", { createdAt });
     }),
 
   delete: publicProcedure
@@ -36,8 +38,8 @@ export const msgRouter = createTRPCRouter({
     }),
 
   onSendMessage: publicProcedure.subscription(({ ctx }) => {
-    return observable<{ createdAt: Date }>((emit) => {
-      const onSendMessage = (data: { createdAt: Date }) => {
+    return observable<{ _id: string }>((emit) => {
+      const onSendMessage = (data: { _id: string }) => {
         emit.next(data);
       };
 
