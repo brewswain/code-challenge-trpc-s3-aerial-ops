@@ -19,7 +19,6 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "../db";
-import { ee } from "../websockets/eventEmitter";
 
 type CreateContextOptions = Record<string, never>;
 
@@ -35,7 +34,6 @@ type CreateContextOptions = Record<string, never>;
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
     prisma,
-    ee,
   };
 };
 
