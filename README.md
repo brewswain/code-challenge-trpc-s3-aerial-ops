@@ -13,11 +13,11 @@
 
 ## Stretch Goals
 
-- [ ] use [Optimistic Updates](https://tanstack.com/query/latest/docs/react/guides/optimistic-updates) for `msg.add` and `msg.delete`
+- [x] use [Optimistic Updates](https://tanstack.com/query/latest/docs/react/guides/optimistic-updates) for `msg.add` and `msg.delete`
+
+- [x] `msg.delete` should also delete any images
 
 - [ ] ensure that `msg.list` returns messages | urls for displaying images if they exist
-
-- [ ] `msg.delete` should also delete any images
 
 - [ ] implement [Mantine](https://mantine.dev/) for component library stuff (Might retrofit once I get base functionality down, this is lower priority since I have to learn TRPC and Zod first.)
 
