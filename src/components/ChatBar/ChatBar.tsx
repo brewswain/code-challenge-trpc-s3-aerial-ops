@@ -7,7 +7,20 @@ import { api } from "../../utils/api";
 const ChatBar = () => {
   const [textInput, setTextInput] = useState<string>("");
 
-  const sendMessageMutation = api.msg.add.useMutation();
+  const utils = api.useContext();
+
+  const sendMessageMutation = api.msg.add.useMutation({
+    onMutate: async () => {
+      await utils.msg.list.cancel();
+    },
+
+    onError: (error) => {
+      alert(error);
+    },
+    onSettled: async () => {
+      await utils.msg.invalidate();
+    },
+  });
 
   const handleChange = (inputMessage: string) => {
     setTextInput(inputMessage);
