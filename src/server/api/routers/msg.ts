@@ -33,7 +33,7 @@ export const msgRouter = createTRPCRouter({
         const key = imageKeyArray && imageKeyArray[1];
         console.log({ imageKeyArray, key });
         const bucketParams = {
-          Bucket: process.env.AWS_BUCKET_NAME!,
+          Bucket: process.env.S3_BUCKET_NAME!,
           Key: key,
         };
 
@@ -45,7 +45,7 @@ export const msgRouter = createTRPCRouter({
             })
           );
         } catch (error) {
-          console.error("Error deleting object", error);
+          console.error("Error deleting object");
         }
       }
       await ctx.prisma.message.delete({
@@ -74,7 +74,7 @@ export const msgRouter = createTRPCRouter({
         const extension = extensionArray[1];
         const key = `${uuidv4()}.${extension ? extension : ""}`;
         const bucketParams = {
-          Bucket: process.env.AWS_BUCKET_NAME!,
+          Bucket: process.env.S3_BUCKET_NAME!,
           Key: key,
           ContentType: extension ? `image/${extension}` : "",
         };
