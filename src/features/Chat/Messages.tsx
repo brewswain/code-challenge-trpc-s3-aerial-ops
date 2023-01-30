@@ -49,9 +49,9 @@ const Messages = () => {
             Loading! This shouldn't take long, so please contact me if you're
             staring at this screen
           </p>
-          <SkeletonTheme baseColor="#202020" highlightColor="#444" duration={2}>
+          <SkeletonTheme baseColor="#202020" highlightColor="#444">
             <p>
-              <Skeleton duration={2} />
+              <Skeleton />
             </p>
           </SkeletonTheme>
         </div>
