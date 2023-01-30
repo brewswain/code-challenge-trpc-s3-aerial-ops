@@ -5,7 +5,11 @@ import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
 
-const ChatBar = () => {
+interface ChatBarProps {
+  scrollToBottom: () => void;
+}
+
+const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
   const [textInput, setTextInput] = useState<string>("");
   const [file, setFile] = useState<File>();
 
@@ -45,10 +49,6 @@ const ChatBar = () => {
     setTextInput(inputMessage);
   };
 
-  const handleSubmit = () => {
-    alert("Message sent");
-  };
-
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   // Solution taken from youtube--if this breaks check out React's ref documentation:
@@ -74,8 +74,8 @@ const ChatBar = () => {
         hasImage: false,
       });
     }
-
     setTextInput("");
+    scrollToBottom();
   };
 
   // prevent hitting Enter by itself from expanding textarea aka make message send like we expect it to
@@ -96,19 +96,24 @@ const ChatBar = () => {
   }, [textInput]);
 
   return (
-    <div>
+    <div className="fixed bottom-0 left-0 flex w-full bg-slate-200 ">
       {/* TextArea chosen to allow inherent multi-line support */}
       <textarea
         name="message"
         placeholder="Enter Message..."
         onChange={(event) => handleChange(event.target.value)}
-        className="min-h-14 border-1-slate-500 flex h-10 max-h-40 overflow-auto border-2 py-2 px-3 outline-none"
+        className="min-h-12 border-1-slate-500 overflow-none md:bg-red-70 flex h-[48px] max-h-40 w-[60vw] border-2 py-3  px-2 outline-none md:ml-8 md:w-[75vw]"
         ref={textAreaRef}
         onKeyDown={onKeyDown}
         value={textInput}
       />
-      <UploadImageButton setFile={setFile} />
-      <button onClick={handleSubmit}>Send</button>
+      <UploadImageButton setFile={setFile} file={file} />
+      <button
+        onClick={sendMessage}
+        className=" ml-2 flex h-12 w-20 items-center justify-center border-2 bg-[hsl(235,15%,54%)] align-middle outline-1"
+      >
+        Send
+      </button>
     </div>
   );
 };

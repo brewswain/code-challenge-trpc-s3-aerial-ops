@@ -1,4 +1,6 @@
+/* eslint-disable react/no-unescaped-entities */
 import type { Message } from "@prisma/client";
+import { useRef } from "react";
 
 import { ChatBar, MessageModule } from "../../components";
 
@@ -6,6 +8,8 @@ import { api } from "../../utils/api";
 
 const Messages = () => {
   const messages = api.msg.list.useQuery();
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getTimestamp = (messages: Message[], index: number) => {
     const currentDate: Date = messages[index]!.createdAt;
@@ -28,6 +32,12 @@ const Messages = () => {
     }).format(currentDate);
   };
 
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   if (messages.isLoading || messages.error) {
     // Style loading text/replace with skeleton
     return (
@@ -38,7 +48,13 @@ const Messages = () => {
   }
 
   return (
-    <div className="flex w-[50%] flex-col overflow-auto bg-white p-10 ">
+    // If this was a longer term project I'd set up Tailwind custom colours
+    <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] p-5">
+      {messages.data.length < 1 && (
+        <div className="flex h-[calc(100vh-12rem)] items-center justify-center text-2xl text-white">
+          <p>Chat's looking pretty empty 😭 Why don't you help it out a bit?</p>
+        </div>
+      )}
       {messages.data &&
         messages.data.map((message: Message, index) => {
           const macroTimestamp = getTimestamp(messages.data, index);
@@ -51,7 +67,9 @@ const Messages = () => {
             />
           );
         })}
-      <ChatBar />
+      {/* Dummy div that gives us a location to scroll to */}
+      <ChatBar scrollToBottom={scrollToBottom} />
+      <div ref={messagesEndRef} />
     </div>
   );
 };

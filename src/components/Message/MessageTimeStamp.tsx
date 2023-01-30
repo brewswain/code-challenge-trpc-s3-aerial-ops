@@ -46,7 +46,7 @@ const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
 
   return (
     <div>
-      <p>{timeStamp}</p>
+      <p className="text-xs text-slate-400">{timeStamp}</p>
     </div>
   );
 };

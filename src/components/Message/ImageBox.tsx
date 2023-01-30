@@ -7,15 +7,9 @@ interface ImageBoxProps {
 const ImageBox = ({ imageUrl }: ImageBoxProps) => {
   return (
     <>
-      {/* <Image
-        src={imageUrl}
-        alt="placeholder image of kittens"
-        // fill
-        width={200}
-        height={200}
-      /> */}
-
-      <img src={imageUrl} alt="hi" />
+      <div className="">
+        <img src={imageUrl} alt="hi" className="max-h-[500px]" />
+      </div>
     </>
   );
 };

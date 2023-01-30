@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Message } from "@prisma/client";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 
 import ImageBox from "./ImageBox";
 import MessageTimeStamp from "./MessageTimeStamp";
@@ -39,16 +40,26 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
   // Maybe delete from here
   return (
     <div
-      className="p-2"
-      onClick={() => {
-        handleDeletion();
-      }}
+      className="md: relative w-[60vw] p-2"
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >
-      {isVisible && <div>delete icon</div>}
-      <p className="flex justify-center">{timestamp && timestamp.toString()}</p>
-      <p>{message.messageText}</p>
+      {isVisible && (
+        <div className="absolute right-4 h-8 w-12   bg-[hsl(0,0%,75%)] ">
+          <div
+            onClick={() => {
+              handleDeletion();
+            }}
+            className="flex cursor-pointer justify-center  align-middle text-[2rem]"
+          >
+            <MdOutlineDeleteOutline />
+          </div>
+        </div>
+      )}
+      <p className="flex justify-center text-lg text-slate-400">
+        {timestamp && timestamp.toString()}
+      </p>
+      <p className="text-white">{message.messageText}</p>
       {message.image ? <ImageBox imageUrl={message.image} /> : null}
 
       <MessageTimeStamp createdAt={message.createdAt} />
