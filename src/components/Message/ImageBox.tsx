@@ -10,7 +10,7 @@ const ImageBox = ({ imageUrl }: ImageBoxProps) => {
   return (
     <>
       <div className="">
-        <img src={imageUrl} alt="hi" className="max-h-[500px]" />
+        <img src={imageUrl} alt="hi" className="max-h-[350px]" />
       </div>
     </>
   );
