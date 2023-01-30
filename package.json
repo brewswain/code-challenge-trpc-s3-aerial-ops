@@ -35,6 +35,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
+    "react-loading-skeleton": "^3.1.0",
     "sass": "^1.57.1",
     "superjson": "1.9.1",
     "uuid": "^9.0.0",
