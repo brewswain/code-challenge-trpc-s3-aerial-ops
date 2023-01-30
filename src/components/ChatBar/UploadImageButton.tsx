@@ -9,7 +9,7 @@ interface UploadImageButtonProps {
 }
 
 const UploadImageButton = ({ file, setFile }: UploadImageButtonProps) => {
-  const [fileSelected, setFileSelected] = useState<boolean>(false);
+  const [, setFileSelected] = useState<boolean>(false);
   const hiddenFileInput = useRef<HTMLInputElement>(null);
 
   const handleClick = (event: React.MouseEvent) => {
@@ -20,7 +20,6 @@ const UploadImageButton = ({ file, setFile }: UploadImageButtonProps) => {
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    console.log(fileSelected);
     if (event.target.files) {
       event.preventDefault();
       const files = Array.from(event.target.files);
