@@ -1,9 +1,11 @@
 /* eslint-disable react/no-unescaped-entities */
-import type { Message } from "@prisma/client";
 import { useRef } from "react";
+import type { Message } from "@prisma/client";
+
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import { ChatBar, MessageModule } from "../../components";
-
 import { api } from "../../utils/api";
 
 const Messages = () => {
@@ -12,10 +14,10 @@ const Messages = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getTimestamp = (messages: Message[], index: number) => {
-    const currentDate: Date = messages[index]!.createdAt;
-    const previousDate = index !== 0 ? messages[index - 1]!.createdAt : null;
+    const currentDate: Date | undefined = messages[index]?.createdAt;
+    const previousDate = index !== 0 ? messages[index - 1]?.createdAt : null;
 
-    if (previousDate) {
+    if (currentDate && previousDate) {
       // TODO: nested if statements 👎🏽 Fix when done, check for timestamp library
       if (
         previousDate.getDate() === currentDate.getDate() &&
@@ -41,8 +43,18 @@ const Messages = () => {
   if (messages.isLoading || messages.error) {
     // Style loading text/replace with skeleton
     return (
-      <div>
-        <p>{messages.isLoading ? "Loading" : "Error"}</p>
+      <div className=" h-full bg-[hsl(220,8%,23%)]">
+        <div className="flex h-[calc(100vh)] items-center justify-center text-2xl text-white">
+          <p>
+            Loading! This shouldn't take long, so please contact me if you're
+            staring at this screen
+            <SkeletonTheme baseColor="#202020" highlightColor="#444">
+              <p>
+                <Skeleton />
+              </p>
+            </SkeletonTheme>
+          </p>
+        </div>
       </div>
     );
   }
