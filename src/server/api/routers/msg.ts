@@ -26,7 +26,6 @@ export const msgRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input: { id, hasImage, image }, ctx }) => {
-      console.log({ id, hasImage, image });
       if (hasImage) {
         const imageKeyArray = image?.split(".com/");
         const key = imageKeyArray && imageKeyArray[1];
@@ -84,7 +83,6 @@ export const msgRouter = createTRPCRouter({
             expiresIn: 3600,
           });
 
-          console.log({ bucketParams, signedUrl, command });
           const imageUrl = `https://aerial-ops-code-challenge.s3.us-east-2.amazonaws.com/${key}`;
           await ctx.prisma.message.create({
             data: {
@@ -94,9 +92,7 @@ export const msgRouter = createTRPCRouter({
           });
 
           return signedUrl;
-        } catch (err) {
-          console.log("Error creating presigned URL", err);
-        }
+        } catch (err) {}
       } else {
         await ctx.prisma.message.create({
           data: {
