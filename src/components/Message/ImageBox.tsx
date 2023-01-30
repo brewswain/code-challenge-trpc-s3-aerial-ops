@@ -1,4 +1,6 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
+// Chosen to not use Next's native Image element here.
+// TODO: replace when I'm done with stretch goals
 
 interface ImageBoxProps {
   imageUrl: string;

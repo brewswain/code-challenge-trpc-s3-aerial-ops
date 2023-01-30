@@ -1,4 +1,5 @@
-import { ChangeEvent, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useRef, useState } from "react";
 
 import { ImAttachment } from "react-icons/im";
 

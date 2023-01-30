@@ -1,6 +1,5 @@
-import { string, z } from "zod";
+import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -31,9 +30,8 @@ export const msgRouter = createTRPCRouter({
       if (hasImage) {
         const imageKeyArray = image?.split(".com/");
         const key = imageKeyArray && imageKeyArray[1];
-        console.log({ imageKeyArray, key });
         const bucketParams = {
-          Bucket: process.env.S3_BUCKET_NAME!,
+          Bucket: process.env.S3_BUCKET_NAME,
           Key: key,
         };
 
@@ -45,7 +43,7 @@ export const msgRouter = createTRPCRouter({
             })
           );
         } catch (error) {
-          console.error("Error deleting object");
+          console.error("Error deleting object", error);
         }
       }
       await ctx.prisma.message.delete({
@@ -70,11 +68,11 @@ export const msgRouter = createTRPCRouter({
     )
     .mutation(async ({ input: { messageText, hasImage, attachment }, ctx }) => {
       if (hasImage) {
-        const extensionArray = attachment!.name.split(".");
-        const extension = extensionArray[1];
+        const extensionArray = attachment?.name.split(".");
+        const extension = extensionArray ? extensionArray[1] : undefined;
         const key = `${uuidv4()}.${extension ? extension : ""}`;
         const bucketParams = {
-          Bucket: process.env.S3_BUCKET_NAME!,
+          Bucket: process.env.S3_BUCKET_NAME,
           Key: key,
           ContentType: extension ? `image/${extension}` : "",
         };
@@ -98,7 +96,7 @@ export const msgRouter = createTRPCRouter({
           console.log("Error creating presigned URL", err);
         }
       } else {
-        const post = await ctx.prisma.message.create({
+        await ctx.prisma.message.create({
           data: {
             messageText,
           },
