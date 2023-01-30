@@ -21,8 +21,7 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
     },
 
     onSuccess: async (signedUrl) => {
-      setFile(undefined);
-      setTextInput("");
+      console.log({ signedUrl, file });
       try {
         await axios({
           method: "put",
@@ -34,6 +33,9 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
         });
       } catch (error) {
         console.error(error);
+      } finally {
+        setTextInput("");
+        setFile(undefined);
       }
     },
 
