@@ -48,12 +48,12 @@ const Messages = () => {
           <p>
             Loading! This shouldn't take long, so please contact me if you're
             staring at this screen
-            <SkeletonTheme baseColor="#202020" highlightColor="#444">
-              <p>
-                <Skeleton />
-              </p>
-            </SkeletonTheme>
           </p>
+          <SkeletonTheme baseColor="#202020" highlightColor="#444" duration={2}>
+            <p>
+              <Skeleton duration={2} />
+            </p>
+          </SkeletonTheme>
         </div>
       </div>
     );
