@@ -92,10 +92,10 @@ export const msgRouter = createTRPCRouter({
               image: imageUrl,
             },
           });
+
+          return signedUrl;
         } catch (err) {
           console.log("Error creating presigned URL", err);
-        } finally {
-          return signedUrl;
         }
       } else {
         await ctx.prisma.message.create({
