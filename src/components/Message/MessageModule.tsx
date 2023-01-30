@@ -29,7 +29,11 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
   });
 
   const handleDeletion = () => {
-    deleteMessageMutation.mutate({ id: message.id });
+    deleteMessageMutation.mutate({
+      id: message.id,
+      hasImage: message.image ? true : false,
+      image: message.image ? message.image : undefined,
+    });
     return;
   };
   // Maybe delete from here
