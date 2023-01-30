@@ -1,29 +1,36 @@
 import React, { useState, useEffect, useRef } from "react";
-import { string } from "zod";
 import axios from "axios";
 
 import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
-import { UseQueryOptions } from "@tanstack/react-query";
 
 const ChatBar = () => {
   const [textInput, setTextInput] = useState<string>("");
-  const [files, setFiles] = useState<File[]>();
-  const [signedUrl, setSignedUrl] = useState({ url: string, key: string });
+  const [file, setFile] = useState<File>();
 
   const utils = api.useContext();
-  const imageIsAttached = files && files?.length > 0;
-
-  console.log({ files });
-
-  const getPresignedUrlQuery = api.msg.generatePresignedUrl.useQuery({
-    file: imageIsAttached ? files[0]?.name : undefined,
-  });
 
   const sendMessageMutation = api.msg.add.useMutation({
     onMutate: async () => {
       await utils.msg.list.cancel();
+    },
+
+    onSuccess: async (signedUrl) => {
+      setFile(undefined);
+      setTextInput("");
+      try {
+        await axios({
+          method: "put",
+          url: signedUrl,
+          data: file,
+          headers: {
+            "Content-Type": file?.type,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     onError: (error) => {
@@ -33,15 +40,6 @@ const ChatBar = () => {
       await utils.msg.invalidate();
     },
   });
-
-  if (imageIsAttached) {
-    console.log(getPresignedUrlQuery.data);
-  }
-
-  // const name = file.name as string;
-  // const getPresignedUrlQuery = api.msg.generatePresignedUrl.useQuery({
-  //   file: name,
-  // });
 
   const handleChange = (inputMessage: string) => {
     setTextInput(inputMessage);
@@ -63,31 +61,21 @@ const ChatBar = () => {
   };
 
   const sendMessage = () => {
-    if (textInput) {
+    if (file) {
       sendMessageMutation.mutate({
         messageText: textInput,
-        hasImage: imageIsAttached ? true : false,
-        signedUrl: imageIsAttached ? getPresignedUrlQuery.data : undefined,
-        // file: imageIsAttached ? files[0] : null,
+        hasImage: true,
+        attachment: { name: file.name },
+      });
+    }
+    if (!file && textInput) {
+      sendMessageMutation.mutate({
+        messageText: textInput,
+        hasImage: false,
       });
     }
 
     setTextInput("");
-  };
-
-  const getS3ImageUrl = async (file: File[]) => {
-    if (files && files.length > 0) {
-      const file = files[0];
-      console.log({ file });
-      try {
-        await axios.put(getPresignedUrlQuery.data.url, file);
-        console.log({ signedUrl: signedUrl.data });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    // return getPresignedUrlQuery.data.key;
   };
 
   // prevent hitting Enter by itself from expanding textarea aka make message send like we expect it to
@@ -107,10 +95,6 @@ const ChatBar = () => {
     resizeInput();
   }, [textInput]);
 
-  useEffect(() => {
-    imageIsAttached && getS3ImageUrl(files);
-  }, [files]);
-
   return (
     <div>
       {/* TextArea chosen to allow inherent multi-line support */}
@@ -123,7 +107,7 @@ const ChatBar = () => {
         onKeyDown={onKeyDown}
         value={textInput}
       />
-      <UploadImageButton setFiles={setFiles} />
+      <UploadImageButton setFile={setFile} />
       <button onClick={handleSubmit}>Send</button>
     </div>
   );
