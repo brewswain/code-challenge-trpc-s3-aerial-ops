@@ -83,6 +83,8 @@ export const msgRouter = createTRPCRouter({
           const signedUrl = await getSignedUrl(s3Client, command, {
             expiresIn: 3600,
           });
+
+          console.log({ bucketParams, signedUrl, command });
           const imageUrl = `https://aerial-ops-code-challenge.s3.us-east-2.amazonaws.com/${key}`;
           await ctx.prisma.message.create({
             data: {
@@ -90,10 +92,10 @@ export const msgRouter = createTRPCRouter({
               image: imageUrl,
             },
           });
-
-          return signedUrl;
         } catch (err) {
           console.log("Error creating presigned URL", err);
+        } finally {
+          return signedUrl;
         }
       } else {
         await ctx.prisma.message.create({
