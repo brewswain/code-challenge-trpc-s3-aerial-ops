@@ -6,7 +6,7 @@
 - [x] Create basic visual mockup of chat -- Not styled
 - [x] Begin working on trpc for endpoint functionality
 - [x] Use Mongo
-- [x] Learn S3 (Should be simple, Experience with GCP and firebase will help out, so don't expect too much time investment outside of configuring to use **pre-signed Urls**) Update I was so, so wrong 😭
+- [x] Learn S3 ~~(Should be simple, Experience with GCP and firebase will help out, so don't expect too much time investment outside of configuring to use **pre-signed Urls**)~~ Update I was so, so wrong 😭
 - [x] Use S3
 - [ ] Create simple Chat room, no authentication
 - [ ] Deploy on Vercel
