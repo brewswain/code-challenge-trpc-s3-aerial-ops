@@ -10,7 +10,6 @@ const Home: NextPage = () => {
 
   return (
     <div className="h-[100vh]  bg-slate-500">
-      <button onClick={() => renderToast("test")}>toast!</button>
       <Messages />
       <ToastContainer
         theme="dark"
