@@ -21,7 +21,10 @@ const ChatBar = () => {
       // TODO: iron out typing errors.
       if (cachedData) {
         return utils.msg.list.setData(undefined, [
+          // Temporarily using ts-ignore to test if everything works in prod, will fix typing issues as soon as I work out error handling
+          //@ts-ignore
           ...cachedData,
+          //@ts-ignore
           { hasImage: data.hasImage, messageText: data.messageText },
         ]);
       }
