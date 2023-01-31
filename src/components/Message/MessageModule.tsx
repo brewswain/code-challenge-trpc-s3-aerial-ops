@@ -14,6 +14,7 @@ interface MessageModuleProps {
 
 const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [messageVisible, setMessageVisible] = useState<boolean>(true);
   const utils = api.useContext();
 
   const deleteMessageMutation = api.msg.delete.useMutation({
@@ -35,17 +36,20 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
       hasImage: message.image ? true : false,
       image: message.image ? message.image : undefined,
     });
+    // Done to make Deletion appear smoother to the user as well as prevents the error message that pops up if a user double
+    // clicks the delete icon
+    setMessageVisible(false);
     return;
   };
   // Maybe delete from here
   return (
     <div
-      className="md: relative w-[60vw] p-2"
+      className={`md: relative w-[60vw] p-2 ${messageVisible ? "" : "hidden"}`}
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >
       {isVisible && (
-        <div className="absolute right-4 h-8 w-12   bg-[hsl(0,0%,75%)] ">
+        <div className="absolute right-4 h-8 w-12 bg-[hsl(0,0%,75%)]">
           <div
             onClick={() => {
               handleDeletion();
