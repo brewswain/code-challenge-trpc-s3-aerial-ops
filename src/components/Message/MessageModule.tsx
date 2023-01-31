@@ -1,4 +1,7 @@
 import { RefObject, useEffect, useState } from "react";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import type { Message } from "@prisma/client";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 
@@ -21,6 +24,7 @@ const MessageModule = ({
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [messageHidden, setMessageHidden] = useState<boolean>(false);
   const utils = api.useContext();
+  const renderToast = (toastMessage: string) => toast(toastMessage);
 
   const deleteMessageMutation = api.msg.delete.useMutation({
     onMutate: async (data) => {
@@ -48,8 +52,10 @@ const MessageModule = ({
     onError: (error, _variables, ctx) => {
       // Error handling will be updated later to use toasts
       utils.msg.list.setData(undefined, ctx?.cachedData);
+
       if (error) {
-        console.error(error);
+        console.log({ error });
+        renderToast(error.message);
       }
     },
     onSettled: async () => {
@@ -63,9 +69,6 @@ const MessageModule = ({
       hasImage: message.image ? true : false,
       image: message.image ? message.image : undefined,
     });
-    // Done to make Deletion appear smoother to the user as well as prevents the error message that pops up if a user double
-    // clicks the delete icon
-    setMessageHidden(true);
     return;
   };
   useEffect(() => {
@@ -74,9 +77,7 @@ const MessageModule = ({
   // Maybe delete from here
   return (
     <div
-      className={`md: relative mb-4 w-[60vw] p-2 ${
-        messageHidden ? "hidden" : ""
-      }`}
+      className="md: relative mb-4 w-[60vw] p-2"
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >

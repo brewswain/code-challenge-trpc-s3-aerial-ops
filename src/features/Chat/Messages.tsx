@@ -8,11 +8,13 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import { ChatBar, MessageModule } from "../../components";
 import { api } from "../../utils/api";
+import { toast } from "react-toastify";
 
 const Messages = () => {
   const messages = api.msg.list.useQuery();
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const renderToast = (toastMessage: string) => toast(toastMessage);
 
   const getTimestamp = (messages: Message[], index: number) => {
     const currentDate: string | undefined = moment(
@@ -41,7 +43,7 @@ const Messages = () => {
         <div className="flex h-[calc(100vh)] items-center justify-center text-2xl text-white">
           <p>
             Loading! This shouldn't take long, so please contact me if you're
-            staring at this screen
+            staring at this screen for more than 5 seconds 😔
             <SkeletonTheme baseColor="#202020" highlightColor="#444">
               <span>
                 <Skeleton />
@@ -72,7 +74,7 @@ const Messages = () => {
             return (
               <MessageModule
                 scrollToBottom={scrollToBottom}
-                key={message.id}
+                key={`${index} ${message.id}`}
                 message={message}
                 timestamp={macroTimestamp}
               />

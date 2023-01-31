@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 import UploadImageButton from "./UploadImageButton";
 
@@ -8,6 +11,7 @@ import { api } from "../../utils/api";
 const ChatBar = () => {
   const [textInput, setTextInput] = useState<string>("");
   const [file, setFile] = useState<File>();
+  const renderToast = (toastMessage: string) => toast(toastMessage);
 
   const utils = api.useContext();
 
@@ -46,7 +50,6 @@ const ChatBar = () => {
             },
           });
         } catch (error) {
-          console.error(error);
         } finally {
           setTextInput("");
           setFile(undefined);
@@ -58,7 +61,7 @@ const ChatBar = () => {
     onError: (error, _variables, ctx) => {
       utils.msg.list.setData(undefined, ctx?.cachedData);
       if (error) {
-        console.error(error);
+        renderToast(error.message);
       }
     },
     onSettled: async () => {
