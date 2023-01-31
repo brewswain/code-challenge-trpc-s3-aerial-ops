@@ -25,14 +25,12 @@ const MessageModule = ({
   const deleteMessageMutation = api.msg.delete.useMutation({
     onMutate: async (data) => {
       await utils.msg.list.cancel();
-      console.log({ data });
 
       const cachedData = utils.msg.list.getData();
 
       const filteredData = cachedData?.filter(
         (message) => message.id !== data.id
       );
-      console.log({ filteredData });
 
       if (cachedData) {
         return utils.msg.list.setData(
