@@ -34,7 +34,7 @@
 - [x] You manually handle time display. You should use dayjs or moments.js
 - [x] The website doesn't scroll down after submitting a message (although there seems to be code to do that)
 - [x] your code does not support optimistic updates, although the feature seems to work on yoru webiste
-- [ ] You use console.log / alert for errors. You should probably display the error back to the user; you may have to return a value in trpc and then figure out a way to display that error.
+- [x] You use console.log / alert for errors. You should probably display the error back to the user; you may have to return a value in trpc and then figure out a way to display that error.
 
 ---
 
