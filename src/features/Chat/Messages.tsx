@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useRef } from "react";
 import type { Message } from "@prisma/client";
-
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import moment from "moment";
+
 import "react-loading-skeleton/dist/skeleton.css";
 
 import { ChatBar, MessageModule } from "../../components";
@@ -14,30 +15,23 @@ const Messages = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getTimestamp = (messages: Message[], index: number) => {
-    const currentDate: Date | undefined = messages[index]?.createdAt;
-    const previousDate = index !== 0 ? messages[index - 1]?.createdAt : null;
+    const currentDate: string | undefined = moment(
+      messages[index]?.createdAt
+    ).format("MMMM Do, YYYY");
+    const previousDate: string | null | undefined =
+      index !== 0
+        ? moment(messages[index - 1]?.createdAt).format("MMMM Do, YYYY")
+        : null;
 
-    if (currentDate && previousDate) {
-      // TODO: nested if statements 👎🏽 Fix when done, check for timestamp library
-      if (
-        previousDate.getDate() === currentDate.getDate() &&
-        previousDate.getMonth() === currentDate.getMonth() &&
-        previousDate.getFullYear() === previousDate.getFullYear()
-      )
-        return null;
+    if (currentDate === previousDate) {
+      return null;
     }
-
-    return new Intl.DateTimeFormat([], {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }).format(currentDate);
+    return currentDate;
   };
 
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    // Identified problem -- Scroll occurs before post is made, causing this issue where it doesn't scroll fully.
+    messagesEndRef.current?.scrollIntoView(false);
   };
 
   if (messages.isLoading || messages.error) {
@@ -61,28 +55,35 @@ const Messages = () => {
 
   return (
     // If this was a longer term project I'd set up Tailwind custom colours
-    <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] pt-5 pl-12">
-      {messages.data.length < 1 && (
-        <div className="flex h-[calc(100vh-12rem)] items-center justify-center text-2xl text-white">
-          <p>Chat's looking pretty empty 😭 Why don't you help it out a bit?</p>
-        </div>
-      )}
-      {messages.data &&
-        messages.data.map((message: Message, index) => {
-          const macroTimestamp = getTimestamp(messages.data, index);
 
-          return (
-            <MessageModule
-              key={message.id}
-              message={message}
-              timestamp={macroTimestamp}
-            />
-          );
-        })}
-      {/* Dummy div that gives us a location to scroll to */}
-      <ChatBar scrollToBottom={scrollToBottom} />
-      <div ref={messagesEndRef} />
-    </div>
+    <>
+      <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] pt-5 pl-12">
+        {messages.data.length < 1 && (
+          <div className="flex h-[calc(100vh-12rem)] items-center justify-center text-2xl text-white">
+            <p>
+              Chat's looking pretty empty 😭 Why don't you help it out a bit?
+            </p>
+          </div>
+        )}
+        {messages.data &&
+          messages.data.map((message: Message, index) => {
+            const macroTimestamp = getTimestamp(messages.data, index);
+
+            return (
+              <MessageModule
+                key={message.id}
+                message={message}
+                timestamp={macroTimestamp}
+              />
+            );
+          })}
+        {/* Dummy div that gives us a location to scroll to */}
+        <div />
+        <div ref={messagesEndRef}>
+          <ChatBar scrollToBottom={scrollToBottom} />
+        </div>
+      </div>
+    </>
   );
 };
 
