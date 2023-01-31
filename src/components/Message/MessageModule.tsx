@@ -38,6 +38,7 @@ const MessageModule = ({
         return utils.msg.list.setData(
           undefined,
           // Temporarily using ts-ignore to test if everything works in prod, will fix typing issues as soon as I work out error handling
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           [...filteredData]
         );

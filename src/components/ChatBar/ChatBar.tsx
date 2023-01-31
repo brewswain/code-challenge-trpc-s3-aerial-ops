@@ -22,8 +22,10 @@ const ChatBar = () => {
       if (cachedData) {
         return utils.msg.list.setData(undefined, [
           // Temporarily using ts-ignore to test if everything works in prod, will fix typing issues as soon as I work out error handling
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           ...cachedData,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           { hasImage: data.hasImage, messageText: data.messageText },
         ]);
