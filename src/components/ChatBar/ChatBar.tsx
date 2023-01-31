@@ -21,21 +21,24 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
     },
 
     onSuccess: async (signedUrl) => {
-      try {
-        await axios({
-          method: "put",
-          url: signedUrl,
-          data: file,
-          headers: {
-            "Content-Type": file?.type,
-          },
-        });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setTextInput("");
-        setFile(undefined);
+      if (signedUrl) {
+        try {
+          await axios({
+            method: "put",
+            url: signedUrl,
+            data: file,
+            headers: {
+              "Content-Type": file?.type,
+            },
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setTextInput("");
+          setFile(undefined);
+        }
       }
+      return;
     },
 
     onError: (error) => {
