@@ -104,7 +104,7 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
         name="message"
         placeholder="Enter Message..."
         onChange={(event) => handleChange(event.target.value)}
-        className="min-h-12 border-1-slate-500 overflow-none md:bg-red-70 flex h-[48px] max-h-40 w-[60vw] border-2 py-3  px-2 outline-none md:ml-8 md:w-[75vw]"
+        className="min-h-12 border-1-slate-500 md:bg-red-70 flex h-[48px] max-h-40 w-[60vw] overflow-hidden border-2 py-3  px-2 outline-none md:ml-8 md:w-[75vw]"
         ref={textAreaRef}
         onKeyDown={onKeyDown}
         value={textInput}

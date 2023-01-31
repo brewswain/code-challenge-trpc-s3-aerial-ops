@@ -56,7 +56,7 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
           </div>
         </div>
       )}
-      <p className="flex justify-center pb-2 text-lg text-slate-400">
+      <p className="flex justify-center pb-2 pt-2 text-lg text-slate-400">
         {timestamp && timestamp.toString()}
       </p>
       <p className="pb-4 text-white">{message.messageText}</p>
