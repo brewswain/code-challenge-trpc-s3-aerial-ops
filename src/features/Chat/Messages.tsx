@@ -61,7 +61,7 @@ const Messages = () => {
 
   return (
     // If this was a longer term project I'd set up Tailwind custom colours
-    <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] p-5">
+    <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] pt-5 pl-12">
       {messages.data.length < 1 && (
         <div className="flex h-[calc(100vh-12rem)] items-center justify-center text-2xl text-white">
           <p>Chat's looking pretty empty 😭 Why don't you help it out a bit?</p>
