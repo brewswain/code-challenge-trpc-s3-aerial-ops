@@ -24,6 +24,7 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
 
     onError: (error) => {
       alert(error);
+      setMessageVisible(true);
     },
     onSettled: async () => {
       await utils.msg.invalidate();
