@@ -92,7 +92,9 @@ export const msgRouter = createTRPCRouter({
           });
 
           return signedUrl;
-        } catch (err) {}
+        } catch (error) {
+          console.error(error);
+        }
       } else {
         await ctx.prisma.message.create({
           data: {
