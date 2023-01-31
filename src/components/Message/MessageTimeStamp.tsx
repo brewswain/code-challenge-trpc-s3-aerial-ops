@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import moment from "moment";
 
 interface MessageTimeStampProps {
   createdAt: Date;
@@ -6,47 +7,38 @@ interface MessageTimeStampProps {
 
 const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
   const [timeStamp, setTimeStamp] = useState<string>("");
+  // cloning our Date to prevent accidental modification of source
 
   const calculateTimestamps = () => {
-    const previousMessageTimeInMinutes = Math.floor(
-      createdAt.getTime() / (1000 * 60)
+    const createdAtWrapper = moment(createdAt);
+    const messageTimeInMinutes = createdAtWrapper.minute();
+    const formattedTimestamp = createdAtWrapper.format(
+      "ddd, MMM Do YYYY - h:mm A"
     );
-    const currentTimeinMinutes = Math.floor(Date.now() / (1000 * 60));
-    const timeSinceLastMessage =
-      currentTimeinMinutes - previousMessageTimeInMinutes;
+    const currentTimeInMinutes = moment().minute();
+    const timeSinceLastMessage = currentTimeInMinutes - messageTimeInMinutes;
 
-    if (timeSinceLastMessage <= 5 && timeSinceLastMessage > 0) {
-      setTimeStamp(`${timeSinceLastMessage} minutes ago`);
-      ``;
-    } else if (timeSinceLastMessage > 5) {
-      setTimeStamp(formattedTimestamp);
-    } else {
-      setTimeStamp("sent just now");
+    switch (true) {
+      case timeSinceLastMessage === 0:
+        setTimeStamp("sent just now");
+        break;
+      case timeSinceLastMessage === 1:
+        setTimeStamp("1 minute ago");
+        break;
+      case timeSinceLastMessage > 1 && timeSinceLastMessage <= 5:
+        setTimeStamp(`${timeSinceLastMessage} minutes ago`);
+        break;
+      default:
+        setTimeStamp(formattedTimestamp);
     }
   };
-  // Detailed Timestamp block
-  const locale = "en-us";
-  const timestamp = new Intl.DateTimeFormat(locale, {
-    minute: "numeric",
-    hour: "numeric",
-    year: "numeric",
-    month: "short",
-  }).format(createdAt);
-
-  // Using weekday in our Intl.DateTimeFormat was causing day to show up in weird place,
-  //  and I didn't want to use even more string manipulation
-  const summarizedDay = createdAt.toLocaleDateString(locale, {
-    weekday: "short",
-  });
-
-  const formattedTimestamp = summarizedDay + " " + timestamp.replace(",", " -");
 
   useEffect(() => {
     // Ensures we instantly load up timestamps then checks every minute
     setInterval(() => {
       calculateTimestamps();
     }, 60000);
-  }, [timestamp]);
+  }, [timeStamp]);
 
   // TODO:  instead of using two separate useEffects to run the same method, incorporate the conditional setInterval into our calculateTimestamps() method itself.
   // The only reason why i have them separated is to ensure that the timestamp gets rendered on message being rendered.
