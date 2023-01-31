@@ -18,7 +18,7 @@ const ChatBar = () => {
       // getData gets cached data so this is key for our Optimistic updates together with setData()
       const cachedData = utils.msg.list.getData();
 
-      // TODO: iron our typing errors.
+      // TODO: iron out typing errors.
       if (cachedData) {
         return utils.msg.list.setData(undefined, [
           ...cachedData,
