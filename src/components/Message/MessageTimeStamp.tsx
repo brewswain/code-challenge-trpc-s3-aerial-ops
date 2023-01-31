@@ -49,6 +49,7 @@ const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
   }, [timestamp]);
 
   // TODO:  instead of using two separate useEffects to run the same method, incorporate the conditional setInterval into our calculateTimestamps() method itself.
+  // The only reason why i have them separated is to ensure that the timestamp gets rendered on message being rendered.
   useEffect(() => {
     calculateTimestamps();
   }, []);
