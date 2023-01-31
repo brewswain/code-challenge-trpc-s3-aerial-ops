@@ -23,13 +23,30 @@ const MessageModule = ({
   const utils = api.useContext();
 
   const deleteMessageMutation = api.msg.delete.useMutation({
-    onMutate: async () => {
+    onMutate: async (data) => {
       await utils.msg.list.cancel();
+      console.log({ data });
+
+      const cachedData = utils.msg.list.getData();
+
+      const filteredData = cachedData?.filter(
+        (message) => message.id !== data.id
+      );
+      console.log({ filteredData });
+
+      if (cachedData) {
+        return utils.msg.list.setData(undefined, [...filteredData]);
+      }
+
+      return { cachedData };
     },
 
-    onError: (error) => {
-      alert(error);
-      setMessageHidden(false);
+    onError: (error, _variables, ctx) => {
+      // Error handling will be updated later to use toasts
+      utils.msg.list.setData(undefined, ctx?.cachedData);
+      if (error) {
+        console.error(error);
+      }
     },
     onSettled: async () => {
       await utils.msg.invalidate();

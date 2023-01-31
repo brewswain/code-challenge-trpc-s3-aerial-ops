@@ -12,8 +12,21 @@ const ChatBar = () => {
   const utils = api.useContext();
 
   const sendMessageMutation = api.msg.add.useMutation({
-    onMutate: async () => {
+    onMutate: async (data) => {
       await utils.msg.list.cancel();
+
+      // getData gets cached data so this is key for our Optimistic updates together with setData()
+      const cachedData = utils.msg.list.getData();
+
+      // TODO: iron our typing errors.
+      if (cachedData) {
+        return utils.msg.list.setData(undefined, [
+          ...cachedData,
+          { hasImage: data.hasImage, messageText: data.messageText },
+        ]);
+      }
+
+      return { cachedData };
     },
 
     onSuccess: async (signedUrl) => {
@@ -37,8 +50,11 @@ const ChatBar = () => {
       return;
     },
 
-    onError: (error) => {
-      console.error(error);
+    onError: (error, _variables, ctx) => {
+      utils.msg.list.setData(undefined, ctx?.cachedData);
+      if (error) {
+        console.error(error);
+      }
     },
     onSettled: async () => {
       await utils.msg.invalidate();
