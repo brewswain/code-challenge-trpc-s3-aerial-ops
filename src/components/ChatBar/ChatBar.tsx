@@ -21,7 +21,6 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
     },
 
     onSuccess: async (signedUrl) => {
-      console.log({ signedUrl, file });
       try {
         await axios({
           method: "put",
