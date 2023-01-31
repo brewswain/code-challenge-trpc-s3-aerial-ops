@@ -12,7 +12,12 @@ const Home: NextPage = () => {
     <div className="h-[100vh]  bg-slate-500">
       <button onClick={() => renderToast("test")}>toast!</button>
       <Messages />
-      <ToastContainer />
+      <ToastContainer
+        theme="dark"
+        position="bottom-right"
+        closeOnClick
+        draggable
+      />
     </div>
   );
 };
