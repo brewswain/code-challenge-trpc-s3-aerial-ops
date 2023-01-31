@@ -6,6 +6,24 @@ interface MessageTimeStampProps {
 
 const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
   const [timeStamp, setTimeStamp] = useState<string>("");
+
+  const calculateTimestamps = () => {
+    const previousMessageTimeInMinutes = Math.floor(
+      createdAt.getTime() / (1000 * 60)
+    );
+    const currentTimeinMinutes = Math.floor(Date.now() / (1000 * 60));
+    const timeSinceLastMessage =
+      currentTimeinMinutes - previousMessageTimeInMinutes;
+
+    if (timeSinceLastMessage <= 5 && timeSinceLastMessage > 0) {
+      setTimeStamp(`${timeSinceLastMessage} minutes ago`);
+      ``;
+    } else if (timeSinceLastMessage > 5) {
+      setTimeStamp(formattedTimestamp);
+    } else {
+      setTimeStamp("sent just now");
+    }
+  };
   // Detailed Timestamp block
   const locale = "en-us";
   const timestamp = new Intl.DateTimeFormat(locale, {
@@ -23,26 +41,17 @@ const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
 
   const formattedTimestamp = summarizedDay + " " + timestamp.replace(",", " -");
 
-  // Minimal timestamp: "X minutes ago"
-  const previousMessageTimeInMinutes = Math.floor(
-    createdAt.getTime() / (1000 * 60)
-  );
-  const currentTimeinMinutes = Math.floor(Date.now() / (1000 * 60));
-  const timeSinceLastMessage =
-    currentTimeinMinutes - previousMessageTimeInMinutes;
-
-  // This current naive implementation will always show a stale timestamp since it'll just update once a new message
-  // is sent. However, the fix will be easier to conceive when I'm not relying on static data, thus it'll get
-  // focused on later. Maybe a periodic check via api, once a minute? seems expensive
   useEffect(() => {
-    if (timeSinceLastMessage <= 5 && timeSinceLastMessage > 0) {
-      setTimeStamp(`${timeSinceLastMessage} minutes ago`);
-    } else if (timeSinceLastMessage > 5) {
-      setTimeStamp(formattedTimestamp);
-    } else {
-      setTimeStamp("sent just now");
-    }
+    // Ensures we instantly load up timestamps then checks every minute
+    setInterval(() => {
+      calculateTimestamps();
+    }, 60000);
   }, [timestamp]);
+
+  // TODO:  instead of using two separate useEffects to run the same method, incorporate the conditional setInterval into our calculateTimestamps() method itself.
+  useEffect(() => {
+    calculateTimestamps();
+  }, []);
 
   return (
     <div>
