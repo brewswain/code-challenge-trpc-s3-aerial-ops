@@ -5,11 +5,7 @@ import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
 
-interface ChatBarProps {
-  scrollToBottom: () => void;
-}
-
-const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
+const ChatBar = () => {
   const [textInput, setTextInput] = useState<string>("");
   const [file, setFile] = useState<File>();
 
@@ -79,7 +75,6 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
       });
     }
     setTextInput("");
-    scrollToBottom();
   };
 
   // prevent hitting Enter by itself from expanding textarea aka make message send like we expect it to
@@ -100,7 +95,7 @@ const ChatBar = ({ scrollToBottom }: ChatBarProps) => {
   }, [textInput]);
 
   return (
-    <div className="fixed bottom-0 left-0 flex w-full bg-slate-200 ">
+    <div className="fixed bottom-0 left-0 flex w-full bg-slate-200">
       {/* TextArea chosen to allow inherent multi-line support */}
       <textarea
         name="message"
