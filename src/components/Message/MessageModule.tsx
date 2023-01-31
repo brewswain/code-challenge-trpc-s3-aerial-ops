@@ -54,7 +54,6 @@ const MessageModule = ({
       utils.msg.list.setData(undefined, ctx?.cachedData);
 
       if (error) {
-        console.log({ error });
         renderToast(error.message);
       }
     },
@@ -74,7 +73,7 @@ const MessageModule = ({
   useEffect(() => {
     scrollToBottom();
   }, []);
-  // Maybe delete from here
+
   return (
     <div
       className="md: relative mb-4 w-[60vw] p-2"
