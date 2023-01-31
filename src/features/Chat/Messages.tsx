@@ -31,7 +31,7 @@ const Messages = () => {
 
   const scrollToBottom = () => {
     // Identified problem -- Scroll occurs before post is made, causing this issue where it doesn't scroll fully.
-    messagesEndRef.current?.scrollIntoView(false);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (messages.isLoading || messages.error) {
@@ -71,17 +71,18 @@ const Messages = () => {
 
             return (
               <MessageModule
+                scrollToBottom={scrollToBottom}
                 key={message.id}
                 message={message}
                 timestamp={macroTimestamp}
               />
             );
           })}
-        {/* Dummy div that gives us a location to scroll to */}
-        <div />
-        <div ref={messagesEndRef}>
-          <ChatBar scrollToBottom={scrollToBottom} />
-        </div>
+
+        {/* Dummy div that gives us a location to scroll to . I elected to use id instead of class here since I'm using 
+        tailwind for styling and I wanted to label this div at a glance */}
+        <div id="scroll__anchor-point" ref={messagesEndRef} />
+        <ChatBar />
       </div>
     </>
   );

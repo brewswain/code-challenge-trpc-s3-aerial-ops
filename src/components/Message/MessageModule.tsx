@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import type { Message } from "@prisma/client";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 
@@ -10,11 +10,16 @@ import { api } from "../../utils/api";
 interface MessageModuleProps {
   message: Message;
   timestamp: string | null;
+  scrollToBottom: () => void;
 }
 
-const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
+const MessageModule = ({
+  message,
+  timestamp,
+  scrollToBottom,
+}: MessageModuleProps) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [messageVisible, setMessageVisible] = useState<boolean>(true);
+  const [messageHidden, setMessageHidden] = useState<boolean>(false);
   const utils = api.useContext();
 
   const deleteMessageMutation = api.msg.delete.useMutation({
@@ -24,7 +29,7 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
 
     onError: (error) => {
       alert(error);
-      setMessageVisible(true);
+      setMessageHidden(false);
     },
     onSettled: async () => {
       await utils.msg.invalidate();
@@ -39,13 +44,18 @@ const MessageModule = ({ message, timestamp }: MessageModuleProps) => {
     });
     // Done to make Deletion appear smoother to the user as well as prevents the error message that pops up if a user double
     // clicks the delete icon
-    setMessageVisible(false);
+    setMessageHidden(true);
     return;
   };
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
   // Maybe delete from here
   return (
     <div
-      className={`md: relative w-[60vw] p-2 ${messageVisible ? "" : "hidden"}`}
+      className={`md: relative mb-4 w-[60vw] p-2 ${
+        messageHidden ? "hidden" : ""
+      }`}
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >
