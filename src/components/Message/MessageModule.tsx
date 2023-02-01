@@ -22,7 +22,6 @@ const MessageModule = ({
   scrollToBottom,
 }: MessageModuleProps) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [messageHidden, setMessageHidden] = useState<boolean>(false);
   const utils = api.useContext();
   const renderToast = (toastMessage: string) => toast(toastMessage);
 
@@ -37,13 +36,8 @@ const MessageModule = ({
       );
 
       if (cachedData) {
-        return utils.msg.list.setData(
-          undefined,
-          // Temporarily using ts-ignore to test if everything works in prod, will fix typing issues as soon as I work out error handling
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          [...filteredData]
-        );
+        // False flag as expanded upon in ChatBar.tsx line 26.
+        return utils.msg.list.setData(undefined, [...filteredData]);
       }
 
       return { cachedData };

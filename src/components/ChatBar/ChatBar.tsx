@@ -22,16 +22,28 @@ const ChatBar = () => {
       // getData gets cached data so this is key for our Optimistic updates together with setData()
       const cachedData = utils.msg.list.getData();
 
-      // TODO: iron out typing errors.
       if (cachedData) {
-        return utils.msg.list.setData(undefined, [
-          // Temporarily using ts-ignore to test if everything works in prod, will fix typing issues as soon as I work out error handling
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
+        //  Upon doing research, this typing issue is caused by Prisma's model generation, where optional Params don't get detected in typescript as being optional.
+        //  Please see the model currently in use for Message:
+
+        //   model Message {
+        //     id String @id @default(auto()) @map("_id") @db.ObjectId
+        //     image String?
+        //     messageText String?
+        //     hasImage Boolean?
+        //     createdAt DateTime? @default(now()) @db.Timestamp()
+        //     @@index([createdAt])
+        // }
+
+        // This still kicks the type errors below when we try to set Data on our Message model, despite id being the only compulsory param. Therefore, I'm treating
+        // this error as a false flag. It doesn't break linting rules, and the functionality works so I'm electing to keep my implementation as is.
+        // I'll remove the @ts-ignore lines however.
+
+        utils.msg.list.setData(undefined, [
           ...cachedData,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          { hasImage: data.hasImage, messageText: data.messageText },
+          {
+            messageText: data.messageText,
+          },
         ]);
       }
 
