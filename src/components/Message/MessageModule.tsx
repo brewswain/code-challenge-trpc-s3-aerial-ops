@@ -1,6 +1,6 @@
-import { RefObject, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import type { Message } from "@prisma/client";
 import { MdOutlineDeleteOutline } from "react-icons/md";

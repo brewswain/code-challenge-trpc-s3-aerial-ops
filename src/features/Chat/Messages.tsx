@@ -8,13 +8,10 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import { ChatBar, MessageModule } from "../../components";
 import { api } from "../../utils/api";
-import { toast } from "react-toastify";
 
 const Messages = () => {
   const messages = api.msg.list.useQuery();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const renderToast = (toastMessage: string) => toast(toastMessage);
 
   const getTimestamp = (messages: Message[], index: number) => {
     const currentDate: string | undefined = moment(
