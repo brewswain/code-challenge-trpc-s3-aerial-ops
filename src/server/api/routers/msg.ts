@@ -30,9 +30,6 @@ export const msgRouter = createTRPCRouter({
       const messages = await ctx.prisma.message.findMany({
         take: limit + 1,
         skip: 1,
-        // where: {
-        //   messageText: {},
-        // },
         cursor: cursor ? { myCursor: cursor } : undefined,
         orderBy: {
           createdAt: "asc",
