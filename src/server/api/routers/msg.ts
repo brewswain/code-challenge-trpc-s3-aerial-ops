@@ -17,6 +17,38 @@ export const msgRouter = createTRPCRouter({
     });
   }),
 
+  cursorBasedList: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const limit = input.limit ?? 50;
+      const { cursor } = input;
+      const messages = await ctx.prisma.message.findMany({
+        take: limit + 1,
+        skip: 1,
+        // where: {
+        //   messageText: {},
+        // },
+        cursor: cursor ? { myCursor: cursor } : undefined,
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (messages.length > limit) {
+        const nextItem = messages.pop();
+        nextCursor = nextItem!.myCursor;
+      }
+      return {
+        messages,
+        nextCursor,
+      };
+    }),
+
   delete: publicProcedure
     .input(
       z.object({
@@ -75,6 +107,7 @@ export const msgRouter = createTRPCRouter({
           Key: key,
           ContentType: extension ? `image/${extension}` : "",
         };
+
         try {
           // Create a command to put the object in the S3 bucket.
           const command = new PutObjectCommand(bucketParams);

@@ -13,9 +13,10 @@ datasource db {
 model Message {
     id String @id @default(auto()) @map("_id") @db.ObjectId
     image String?
-    messageText String?
+    messageText String? 
     hasImage Boolean?
-    createdAt DateTime @default(now()) @db.Timestamp()
+    createdAt DateTime? @default(now()) @db.Timestamp()
+    myCursor Int? @unique
     @@index([createdAt])
 }
 

@@ -17,7 +17,17 @@ const ChatBar = () => {
 
   const sendMessageMutation = api.msg.add.useMutation({
     onMutate: async (data) => {
-      await utils.msg.list.cancel();
+      // await utils.msg.list.cancel();
+      await utils.msg.cursorBasedList.cancel();
+      const allMessages = utils.msg.cursorBasedList.getInfiniteData(
+        {
+          limit: 15,
+        }
+        // {
+        //   getNextPageParam: (lastPage) => lastPage.nextCursor,
+        //   // initialCursor: 1,
+        // }
+      );
 
       // getData gets cached data so this is key for our Optimistic updates together with setData()
       const cachedData = utils.msg.list.getData();
@@ -32,6 +42,7 @@ const ChatBar = () => {
         //     messageText String?
         //     hasImage Boolean?
         //     createdAt DateTime? @default(now()) @db.Timestamp()
+        //     myCursor Int? @unique
         //     @@index([createdAt])
         // }
 
@@ -39,15 +50,22 @@ const ChatBar = () => {
         // this error as a false flag. It doesn't break linting rules, and the functionality works so I'm electing to keep my implementation as is.
         // I'll remove the @ts-ignore lines however.
 
+        // UPDATE: I have to place back the @ts-ignore lines to allow the build since I don't want to do a codebase-wide rule in our tsconfig as this is dangerous
+        // enough as is
+
         utils.msg.list.setData(undefined, [
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
           ...cachedData,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           {
             messageText: data.messageText,
           },
         ]);
       }
 
-      return { cachedData };
+      return { cachedData, allMessages };
     },
 
     onSuccess: async (signedUrl) => {

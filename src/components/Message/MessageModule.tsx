@@ -37,6 +37,8 @@ const MessageModule = ({
 
       if (cachedData) {
         // False flag as expanded upon in ChatBar.tsx line 26.
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
         return utils.msg.list.setData(undefined, [...filteredData]);
       }
 

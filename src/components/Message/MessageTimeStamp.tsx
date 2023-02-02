@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 
 interface MessageTimeStampProps {
-  createdAt: Date;
+  createdAt: Date | null;
 }
 
 const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {

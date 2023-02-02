@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useRef } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import type { Message } from "@prisma/client";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import moment from "moment";
@@ -11,6 +11,50 @@ import { api } from "../../utils/api";
 
 const Messages = () => {
   const messages = api.msg.list.useQuery();
+  const cursorBasedMessages = api.msg.cursorBasedList.useInfiniteQuery(
+    { limit: 15 },
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        const nextPage = allPages.length + 1;
+        // lastPage.nextCursor
+        return lastPage.messages.length !== 0 ? nextPage : undefined;
+      },
+      keepPreviousData: true,
+    }
+  );
+
+  // Going to try using an Intersection Observer For monitoring "Scroll position"--in this case it's actually monitoring for if
+  // an observed element is visible or reaches a defined position, then fires a callback. This'll need useRef() and useCallback()
+  // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+  const observerElementRef = useRef(null);
+
+  const handleObserver = useCallback<IntersectionObserverCallback>(
+    async (entries: IntersectionObserverEntry[]) => {
+      const [target] = entries;
+      if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
+        await cursorBasedMessages.fetchNextPage();
+      }
+    },
+    [cursorBasedMessages]
+  );
+
+  useEffect(() => {
+    const element = observerElementRef.current;
+    const option = { threshold: 0 };
+
+    const observer = new IntersectionObserver(handleObserver, option);
+
+    if (element) {
+      observer.observe(element);
+      return () => observer.unobserve(element);
+    }
+  }, [
+    cursorBasedMessages.fetchNextPage,
+    cursorBasedMessages.hasNextPage,
+    handleObserver,
+  ]);
+
+  // console.log({ infiniteMessages: cursorBasedMessages.data });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getTimestamp = (messages: Message[], index: number) => {
@@ -64,7 +108,23 @@ const Messages = () => {
             </p>
           </div>
         )}
-        {messages.data &&
+        {cursorBasedMessages.data?.pages &&
+          cursorBasedMessages.data?.pages.map((page) =>
+            page.messages.map((message, index) => {
+              const macroTimestamp = getTimestamp(page.messages, index);
+              return (
+                <MessageModule
+                  scrollToBottom={scrollToBottom}
+                  key={`${index} ${message.id}`}
+                  message={message}
+                  timestamp={macroTimestamp}
+                />
+              );
+            })
+          )}
+
+        {/* Temporarily keeping this code around for reference */}
+        {/* {messages.data &&
           messages.data.map((message: Message, index) => {
             const macroTimestamp = getTimestamp(messages.data, index);
 
@@ -76,10 +136,11 @@ const Messages = () => {
                 timestamp={macroTimestamp}
               />
             );
-          })}
+          })} */}
 
-        {/* Dummy div that gives us a location to scroll to . I elected to use id instead of class here since I'm using 
-        tailwind for styling and I wanted to label this div at a glance */}
+        {/* Dummy divs that gives us locations to scroll to . I elected to use id instead of class here since I'm using 
+        tailwind for styling and I wanted to label these divs at a glance */}
+        <div id="scroll__infinite-scroll-point" ref={observerElementRef} />
         <div id="scroll__anchor-point" ref={messagesEndRef} />
         <ChatBar />
       </div>
