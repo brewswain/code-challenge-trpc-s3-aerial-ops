@@ -83,6 +83,10 @@ const MessageModule = ({
     return;
   };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+
   return (
     <div
       className="md: relative mb-4 w-[60vw] p-2"
