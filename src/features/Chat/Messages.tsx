@@ -47,54 +47,54 @@ const Messages = () => {
 
   // UPDATE this is where i stopped, left everything commented as Proof of existence.
 
-  // const handleObserver = useCallback<IntersectionObserverCallback>(
-  //   async (entries: IntersectionObserverEntry[]) => {
-  //     const queriedPages = cursorBasedMessages.data?.pages;
-  //     const [target] = entries;
+  const handleObserver = useCallback<IntersectionObserverCallback>(
+    async (entries: IntersectionObserverEntry[]) => {
+      // const queriedPages = cursorBasedMessages.data?.pages;
+      const [target] = entries;
 
-  //     const getNewMessages = () => {
-  //       utils.msg.list.setInfiniteData({ limit: 5 }, (data) => ({
-  //         pages: data.pages.slice(1),
-  //         pageParams: data.pageParams.slice(1),
-  //       }));
-  //     };
+      // const getNewMessages = () => {
+      //   utils.msg.list.setInfiniteData({ limit: 5 }, (data) => ({
+      //     pages: data.pages.slice(1),
+      //     pageParams: data.pageParams.slice(1),
+      //   }));
+      // };
 
-  //     utils.msg;
-  //     const getOldMessages = () => {
-  //       const cachedData = allPages;
-  //       setQueryPages(allPages);
-  //       utils.msg.list.setInfiniteData(
-  //         { limit: cursorBasedMessagesConfig.limit },
-  //         (data) => ({
-  //           pages: data.pages.slice(-1),
+      utils.msg;
+      // const getOldMessages = () => {
+      //   const cachedData = allPages;
+      //   setQueryPages(allPages);
+      //   utils.msg.list.setInfiniteData(
+      //     { limit: cursorBasedMessagesConfig.limit },
+      //     (data) => ({
+      //       pages: data.pages.slice(-1),
 
-  //           pageParams: data.pageParams.slice(-1),
-  //         })
-  //       );
-  //     };
+      //       pageParams: data.pageParams.slice(-1),
+      //     })
+      //   );
+      // };
 
-  // This worked to a point. It would successfully give me only 2 pages worth of content, but the method of
-  // using slice was destructive to our cached data, and I couldn't figure out a way to get the entirety of
-  // the paginated data on hand to use an alternate method of array manipulation, probably something with index manipulation.
-  // Either way, My timebox ran out and I didn't think it would be fair to keep hammering away at it considering how
-  // sporadic my schedule's already been for this submission.
-  //     if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
-  //       await cursorBasedMessages.fetchNextPage();
-  //       queriedPages && queriedPages?.length > 2 && getNewMessages();
-  //     }
+      // This worked to a point. It would successfully give me only 2 pages worth of content, but the method of
+      // using slice was destructive to our cached data, and I couldn't figure out a way to get the entirety of
+      // the paginated data on hand to use an alternate method of array manipulation, probably something with index manipulation.
+      // Either way, My timebox ran out and I didn't think it would be fair to keep hammering away at it considering how
+      // sporadic my schedule's already been for this submission.
 
-  //     if (
-  //       target &&
-  //       target.isIntersecting &&
-  //       cursorBasedMessages.hasPreviousPage
-  //     ) {
-  //       // await cursorBasedMessages.fetchPreviousPage();
-  //       // queriedPages && queriedPages?.length > 2 && getOldMessages();
-  //     }
-  //   },
-  //   // },
-  //   [cursorBasedMessages]
-  // );
+      if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
+        await cursorBasedMessages.fetchNextPage();
+        // queriedPages && queriedPages?.length > 2 && getNewMessages();
+      }
+      //     if (
+      //       target &&
+      //       target.isIntersecting &&
+      //       cursorBasedMessages.hasPreviousPage
+      //     ) {
+      //       // await cursorBasedMessages.fetchPreviousPage();
+      //       // queriedPages && queriedPages?.length > 2 && getOldMessages();
+      //     }
+      //   },
+    },
+    [cursorBasedMessages]
+  );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -118,25 +118,25 @@ const Messages = () => {
   };
 
   // UseEffect for commented out block above--was using observers to track  screen position
-  // useEffect(() => {
-  //   const nextMessagesObserver = nextMessagesObserverRef.current;
-  //   const previousMessagesObserver = previousMessagesObserverRef.current;
-  //   const option = { threshold: 0 };
+  useEffect(() => {
+    const nextMessagesObserver = nextMessagesObserverRef.current;
+    const previousMessagesObserver = previousMessagesObserverRef.current;
+    const option = { threshold: 0 };
 
-  //   const currentlyObservedElement = nextMessagesObserver
-  //     ? nextMessagesObserver
-  //     : previousMessagesObserver;
-  //   const observer = new IntersectionObserver(handleObserver, option);
+    const currentlyObservedElement = nextMessagesObserver
+      ? nextMessagesObserver
+      : previousMessagesObserver;
+    const observer = new IntersectionObserver(handleObserver, option);
 
-  //   if (currentlyObservedElement) {
-  //     observer.observe(currentlyObservedElement);
-  //     return () => observer.unobserve(currentlyObservedElement);
-  //   }
-  // }, [
-  //   cursorBasedMessages.fetchNextPage,
-  //   cursorBasedMessages.hasNextPage,
-  //   handleObserver,
-  // ]);
+    if (currentlyObservedElement) {
+      observer.observe(currentlyObservedElement);
+      return () => observer.unobserve(currentlyObservedElement);
+    }
+  }, [
+    cursorBasedMessages.fetchNextPage,
+    cursorBasedMessages.hasNextPage,
+    handleObserver,
+  ]);
 
   if (cursorBasedMessages.isLoading || cursorBasedMessages.error) {
     return (
