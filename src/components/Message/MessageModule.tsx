@@ -9,17 +9,22 @@ import ImageBox from "./ImageBox";
 import MessageTimeStamp from "./MessageTimeStamp";
 
 import { api } from "../../utils/api";
+import { InfiniteData } from "@tanstack/react-query";
 
 interface MessageModuleProps {
   message: Message;
   timestamp: string | null;
   scrollToBottom: () => void;
+  cursorBasedMessagesConfig: {
+    limit: number;
+  };
 }
 
 const MessageModule = ({
   message,
   timestamp,
   scrollToBottom,
+  cursorBasedMessagesConfig,
 }: MessageModuleProps) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const utils = api.useContext();
@@ -28,26 +33,40 @@ const MessageModule = ({
   const deleteMessageMutation = api.msg.delete.useMutation({
     onMutate: async (data) => {
       await utils.msg.list.cancel();
+      const cachedData = utils.msg.list.getInfiniteData({
+        limit: cursorBasedMessagesConfig.limit,
+      });
 
-      const cachedData = utils.msg.list.getData();
+      const filteredMessages = cachedData?.pages.map((page) => ({
+        messages: page.messages.filter((message) => message.id !== data.id),
+        nextCursor: page.nextCursor,
+      }));
 
-      const filteredData = cachedData?.filter(
-        (message) => message.id !== data.id
+      const filteredData: InfiniteData<{
+        pages: {
+          messages: Message[];
+          nextCursor: string | undefined;
+        }[];
+        pageParams: unknown[];
+      }> = {
+        pages: filteredMessages,
+        pageParams: cachedData?.pageParams,
+      };
+
+      utils.msg.list.setInfiniteData(
+        { limit: cursorBasedMessagesConfig.limit },
+        () => {
+          return filteredData;
+        }
       );
-
-      if (cachedData) {
-        // False flag as expanded upon in ChatBar.tsx line 26.
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        return utils.msg.list.setData(undefined, [...filteredData]);
-      }
 
       return { cachedData };
     },
 
-    onError: (error, _variables, ctx) => {
-      // Error handling will be updated later to use toasts
-      utils.msg.list.setData(undefined, ctx?.cachedData);
+    onError: (error) => {
+      const cachedData = utils.msg.list.getInfiniteData();
+
+      utils.msg.list.setInfiniteData({}, cachedData);
 
       if (error) {
         renderToast(error.message);
