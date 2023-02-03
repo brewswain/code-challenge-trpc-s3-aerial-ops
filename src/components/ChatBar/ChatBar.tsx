@@ -7,6 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
+import type { InfiniteData } from "@tanstack/react-query";
+import type { Message } from "@prisma/client";
 import moment from "moment";
 
 interface ChatBarProps {
