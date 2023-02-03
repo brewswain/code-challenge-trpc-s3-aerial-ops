@@ -10,67 +10,48 @@ import { ChatBar, MessageModule } from "../../components";
 import { api } from "../../utils/api";
 
 const Messages = () => {
-  const messages = api.msg.list.useQuery();
+  const nextMessagesObserverRef = useRef(null);
+  const previousMessagesObserverRef = useRef(null);
 
-  console.log({ messages: messages.data?.length });
   const cursorBasedMessagesConfig = {
-    limit: 5,
+    limit: 10,
   };
-  const cursorBasedMessages = api.msg.cursorBasedList.useInfiniteQuery(
+  const cursorBasedMessages = api.msg.list.useInfiniteQuery(
     { limit: cursorBasedMessagesConfig.limit },
     {
       getNextPageParam: (lastPage, allPages) => {
-        // const nextPage = allPages.length + 1;
-
         const lastMessageIndex = cursorBasedMessagesConfig.limit - 1;
 
         const lastMessageId = lastPage
           ? lastPage.messages[lastMessageIndex]?.id
-          : null;
+          : allPages[0]?.messages[lastMessageIndex]?.id;
 
-        console.log({ lastMessageId });
-        console.log({ lastPage, allPages, lastMessageId });
-        // return lastPage.nextCursor !== 0 ? lastPage : undefined;
         return lastMessageId;
       },
-      // keepPreviousData: true,
     }
   );
 
   // Going to try using an Intersection Observer For monitoring "Scroll position"--in this case it's actually monitoring for if
   // an observed element is visible or reaches a defined position, then fires a callback. This'll need useRef() and useCallback()
   // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-  const observerElementRef = useRef(null);
-
   const handleObserver = useCallback<IntersectionObserverCallback>(
     async (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
-      console.log({ hasNextPage: cursorBasedMessages.hasNextPage });
       if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
-        console.log("fetching next page!");
         await cursorBasedMessages.fetchNextPage();
+      } else {
+        if (
+          target &&
+          target.isIntersecting &&
+          cursorBasedMessages.hasPreviousPage
+        ) {
+          await cursorBasedMessages.fetchPreviousPage();
+        }
       }
     },
     [cursorBasedMessages]
   );
 
-  useEffect(() => {
-    const element = observerElementRef.current;
-    const option = { threshold: 0 };
-
-    const observer = new IntersectionObserver(handleObserver, option);
-
-    if (element) {
-      observer.observe(element);
-      return () => observer.unobserve(element);
-    }
-  }, [
-    cursorBasedMessages.fetchNextPage,
-    cursorBasedMessages.hasNextPage,
-    handleObserver,
-  ]);
-
-  console.log({ infiniteMessages: cursorBasedMessages.data });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getTimestamp = (messages: Message[], index: number) => {
@@ -89,11 +70,30 @@ const Messages = () => {
   };
 
   const scrollToBottom = () => {
-    // Identified problem -- Scroll occurs before post is made, causing this issue where it doesn't scroll fully.
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (messages.isLoading || messages.error) {
+  useEffect(() => {
+    const nextMessagesObserver = nextMessagesObserverRef.current;
+    const previousMessagesObserver = previousMessagesObserverRef.current;
+    const option = { threshold: 0 };
+
+    const currentlyObservedElement = nextMessagesObserver
+      ? nextMessagesObserver
+      : previousMessagesObserver;
+    const observer = new IntersectionObserver(handleObserver, option);
+
+    if (currentlyObservedElement) {
+      observer.observe(currentlyObservedElement);
+      return () => observer.unobserve(currentlyObservedElement);
+    }
+  }, [
+    cursorBasedMessages.fetchNextPage,
+    cursorBasedMessages.hasNextPage,
+    handleObserver,
+  ]);
+
+  if (cursorBasedMessages.isLoading || cursorBasedMessages.error) {
     return (
       <div className=" h-full bg-[hsl(220,8%,23%)]">
         <div className="flex h-[calc(100vh)] items-center justify-center text-2xl text-white">
@@ -114,7 +114,11 @@ const Messages = () => {
   return (
     <>
       <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] pt-5 pl-12">
-        {messages.data.length < 1 && (
+        {/* <div
+          id="scroll__infinite-scroll-point h-2 w-2"
+          ref={previousMessagesObserverRef}
+        /> */}
+        {cursorBasedMessages.data.pages.length < 1 && (
           <div className="flex h-[calc(100vh-12rem)] items-center justify-center text-2xl text-white">
             <p>
               Chat's looking pretty empty 😭 Why don't you help it out a bit?
@@ -129,6 +133,7 @@ const Messages = () => {
                 <MessageModule
                   scrollToBottom={scrollToBottom}
                   key={`${index} ${message.id}`}
+                  cursorBasedMessagesConfig={cursorBasedMessagesConfig}
                   message={message}
                   timestamp={macroTimestamp}
                 />
@@ -136,26 +141,11 @@ const Messages = () => {
             })
           )}
 
-        {/* Temporarily keeping this code around for reference */}
-        {/* {messages.data &&
-          messages.data.map((message: Message, index) => {
-            const macroTimestamp = getTimestamp(messages.data, index);
-
-            return (
-              <MessageModule
-                scrollToBottom={scrollToBottom}
-                key={`${index} ${message.id}`}
-                message={message}
-                timestamp={macroTimestamp}
-              />
-            );
-          })} */}
-
         {/* Dummy divs that gives us locations to scroll to . I elected to use id instead of class here since I'm using 
         tailwind for styling and I wanted to label these divs at a glance */}
-        <div id="scroll__infinite-scroll-point" ref={observerElementRef} />
+        <div id="scroll__infinite-scroll-point" ref={nextMessagesObserverRef} />
         <div id="scroll__anchor-point" ref={messagesEndRef} />
-        <ChatBar />
+        <ChatBar cursorBasedMessagesConfig={cursorBasedMessagesConfig} />
       </div>
     </>
   );
