@@ -8,20 +8,11 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { s3Client } from "../../s3";
 
 export const msgRouter = createTRPCRouter({
-  // If this were an authenticated app, i believe protectedProcedure is more suitable here.
-  list: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.message.findMany({
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
-  }),
-
-  cursorBasedList: publicProcedure
+  list: publicProcedure
     .input(
       z.object({
-        limit: z.number().min(1).max(100).nullish(),
-        cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
+        limit: z.number().min(1).max(100).nullish().optional(),
+        cursor: z.string().nullish().optional(), // <-- "cursor" needs to exist, but can be any type
       })
     )
     .query(async ({ input, ctx }) => {
