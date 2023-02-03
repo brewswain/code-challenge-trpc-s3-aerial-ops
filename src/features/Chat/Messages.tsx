@@ -11,15 +11,29 @@ import { api } from "../../utils/api";
 
 const Messages = () => {
   const messages = api.msg.list.useQuery();
+
+  console.log({ messages: messages.data?.length });
+  const cursorBasedMessagesConfig = {
+    limit: 5,
+  };
   const cursorBasedMessages = api.msg.cursorBasedList.useInfiniteQuery(
-    { limit: 15 },
+    { limit: cursorBasedMessagesConfig.limit },
     {
       getNextPageParam: (lastPage, allPages) => {
-        const nextPage = allPages.length + 1;
-        // lastPage.nextCursor
-        return lastPage.messages.length !== 0 ? nextPage : undefined;
+        // const nextPage = allPages.length + 1;
+
+        const lastMessageIndex = cursorBasedMessagesConfig.limit - 1;
+
+        const lastMessageId = lastPage
+          ? lastPage.messages[lastMessageIndex]?.id
+          : null;
+
+        console.log({ lastMessageId });
+        console.log({ lastPage, allPages, lastMessageId });
+        // return lastPage.nextCursor !== 0 ? lastPage : undefined;
+        return lastMessageId;
       },
-      keepPreviousData: true,
+      // keepPreviousData: true,
     }
   );
 
@@ -31,7 +45,9 @@ const Messages = () => {
   const handleObserver = useCallback<IntersectionObserverCallback>(
     async (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
+      console.log({ hasNextPage: cursorBasedMessages.hasNextPage });
       if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
+        console.log("fetching next page!");
         await cursorBasedMessages.fetchNextPage();
       }
     },
@@ -54,7 +70,7 @@ const Messages = () => {
     handleObserver,
   ]);
 
-  // console.log({ infiniteMessages: cursorBasedMessages.data });
+  console.log({ infiniteMessages: cursorBasedMessages.data });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getTimestamp = (messages: Message[], index: number) => {
@@ -78,7 +94,6 @@ const Messages = () => {
   };
 
   if (messages.isLoading || messages.error) {
-    // Style loading text/replace with skeleton
     return (
       <div className=" h-full bg-[hsl(220,8%,23%)]">
         <div className="flex h-[calc(100vh)] items-center justify-center text-2xl text-white">
@@ -97,8 +112,6 @@ const Messages = () => {
   }
 
   return (
-    // If this was a longer term project I'd set up Tailwind custom colours
-
     <>
       <div className="flex h-[calc(100vh-3rem)] w-full flex-col overflow-auto  bg-[hsl(220,8%,23%)] pt-5 pl-12">
         {messages.data.length < 1 && (

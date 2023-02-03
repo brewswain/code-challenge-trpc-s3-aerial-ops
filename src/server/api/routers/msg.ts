@@ -21,16 +21,16 @@ export const msgRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().min(1).max(100).nullish(),
-        cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
+        cursor: z.string().nullish(), // <-- "cursor" needs to exist, but can be any type
       })
     )
     .query(async ({ input, ctx }) => {
       const limit = input.limit ?? 50;
       const { cursor } = input;
       const messages = await ctx.prisma.message.findMany({
-        take: limit + 1,
-        skip: 1,
-        cursor: cursor ? { myCursor: cursor } : undefined,
+        take: limit,
+        skip: cursor ? 1 : undefined,
+        cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
           createdAt: "asc",
         },
@@ -38,7 +38,7 @@ export const msgRouter = createTRPCRouter({
       let nextCursor: typeof cursor | undefined = undefined;
       if (messages.length > limit) {
         const nextItem = messages.pop();
-        nextCursor = nextItem!.myCursor;
+        nextCursor = nextItem!.id;
       }
       return {
         messages,
