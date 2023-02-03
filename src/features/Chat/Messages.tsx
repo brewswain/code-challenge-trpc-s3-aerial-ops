@@ -8,25 +8,17 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import { ChatBar, MessageModule } from "../../components";
 import { api } from "../../utils/api";
-import { util } from "prettier";
 import { InfiniteData } from "@tanstack/react-query";
 
 const Messages = () => {
   const utils = api.useContext();
   const nextMessagesObserverRef = useRef(null);
   const previousMessagesObserverRef = useRef(null);
-  const [queryPages, setQueryPages] = useState<
-    | InfiniteData<{ messages: Message[]; nextCursor: string | undefined }>
-    | undefined
-  >();
-  const allMessages = utils.msg.list.getData();
-  const allPages = utils.msg.list.getInfiniteData({
-    limit: cursorBasedMessagesConfig.limit,
-  });
 
   const cursorBasedMessagesConfig = {
-    limit: 5,
+    limit: 10,
   };
+
   const cursorBasedMessages = api.msg.list.useInfiniteQuery(
     { limit: cursorBasedMessagesConfig.limit },
     {
@@ -42,12 +34,6 @@ const Messages = () => {
     }
   );
 
-  console.log(
-    utils.msg.list.getInfiniteData({
-      limit: cursorBasedMessagesConfig.limit,
-    })
-  );
-
   // Fun little bit of UX here, I want to extend the cursor-based pagination functionality to only allow a certain
   // amount of messages to be loaded at a time. If it's annoying I'll scrap it but the concept should be something
   // like this:
@@ -58,67 +44,57 @@ const Messages = () => {
   // Going to try using an Intersection Observer For monitoring "Scroll position"--in this case it's actually monitoring for if
   // an observed element is visible or reaches a defined position, then fires a callback. This'll need useRef() and useCallback()
   // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-  const handleObserver = useCallback<IntersectionObserverCallback>(
-    async (entries: IntersectionObserverEntry[]) => {
-      const queriedPages = cursorBasedMessages.data?.pages;
-      const [target] = entries;
 
-      const getNewMessages = () => {
-        utils.msg.list.setInfiniteData({ limit: 5 }, (data) => ({
-          pages: data.pages.slice(1),
-          pageParams: data.pageParams.slice(1),
-        }));
-      };
+  // UPDATE this is where i stopped, left everything commented as Proof of existence.
 
-      utils.msg;
-      const getOldMessages = () => {
-        const cachedData = allPages;
-        setQueryPages(allPages);
-        utils.msg.list.setInfiniteData({ limit: 5 }, (data) => ({
-          pages: data.pages.slice(-1),
+  // const handleObserver = useCallback<IntersectionObserverCallback>(
+  //   async (entries: IntersectionObserverEntry[]) => {
+  //     const queriedPages = cursorBasedMessages.data?.pages;
+  //     const [target] = entries;
 
-          pageParams: data.pageParams.slice(-1),
-        }));
-      };
-      //  cursorBasedMessages.refetch();
-      // utils.msg.list.setInfiniteData(
-      //   { limit: cursorBasedMessagesConfig.limit },
-      //   (data) => ({
-      //     // if (!data) {
-      //     //   return {
-      //     //     pages: [],
-      //     //     pageParams: [],
-      //     //   };
-      //     // }
-      //     pages: data?.pages.slice(0),
-      //     pageParams: data?.pageParams.slice(0),
-      //   })
-      // );
+  //     const getNewMessages = () => {
+  //       utils.msg.list.setInfiniteData({ limit: 5 }, (data) => ({
+  //         pages: data.pages.slice(1),
+  //         pageParams: data.pageParams.slice(1),
+  //       }));
+  //     };
 
-      if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
-        await cursorBasedMessages.fetchNextPage();
-        // queriedPages && queriedPages?.length > 2 && getNewMessages();
+  //     utils.msg;
+  //     const getOldMessages = () => {
+  //       const cachedData = allPages;
+  //       setQueryPages(allPages);
+  //       utils.msg.list.setInfiniteData(
+  //         { limit: cursorBasedMessagesConfig.limit },
+  //         (data) => ({
+  //           pages: data.pages.slice(-1),
 
-        await cursorBasedMessages.refetch();
-        // queriedPages && queriedPages?.length > 2 && getNewMessages();
-        console.log("getting new pages", cursorBasedMessages.data);
-        return { cursorBasedMessages };
-      } else {
-        if (
-          target &&
-          target.isIntersecting &&
-          cursorBasedMessages.hasPreviousPage
-        ) {
-          await cursorBasedMessages.fetchPreviousPage();
+  //           pageParams: data.pageParams.slice(-1),
+  //         })
+  //       );
+  //     };
 
-          // queriedPages && queriedPages?.length > 2 && getOldMessages();
+  // This worked to a point. It would successfully give me only 2 pages worth of content, but the method of
+  // using slice was destructive to our cached data, and I couldn't figure out a way to get the entirety of
+  // the paginated data on hand to use an alternate method of array manipulation, probably something with index manipulation.
+  // Either way, My timebox ran out and I didn't think it would be fair to keep hammering away at it considering how
+  // sporadic my schedule's already been for this submission.
+  //     if (target && target.isIntersecting && cursorBasedMessages.hasNextPage) {
+  //       await cursorBasedMessages.fetchNextPage();
+  //       queriedPages && queriedPages?.length > 2 && getNewMessages();
+  //     }
 
-          console.log("getting old pages", cursorBasedMessages.data?.pages);
-        }
-      }
-    },
-    [cursorBasedMessages]
-  );
+  //     if (
+  //       target &&
+  //       target.isIntersecting &&
+  //       cursorBasedMessages.hasPreviousPage
+  //     ) {
+  //       // await cursorBasedMessages.fetchPreviousPage();
+  //       // queriedPages && queriedPages?.length > 2 && getOldMessages();
+  //     }
+  //   },
+  //   // },
+  //   [cursorBasedMessages]
+  // );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -141,25 +117,26 @@ const Messages = () => {
     messagesEndRef.current?.scrollIntoView();
   };
 
-  useEffect(() => {
-    const nextMessagesObserver = nextMessagesObserverRef.current;
-    const previousMessagesObserver = previousMessagesObserverRef.current;
-    const option = { threshold: 0 };
+  // UseEffect for commented out block above--was using observers to track  screen position
+  // useEffect(() => {
+  //   const nextMessagesObserver = nextMessagesObserverRef.current;
+  //   const previousMessagesObserver = previousMessagesObserverRef.current;
+  //   const option = { threshold: 0 };
 
-    const currentlyObservedElement = nextMessagesObserver
-      ? nextMessagesObserver
-      : previousMessagesObserver;
-    const observer = new IntersectionObserver(handleObserver, option);
+  //   const currentlyObservedElement = nextMessagesObserver
+  //     ? nextMessagesObserver
+  //     : previousMessagesObserver;
+  //   const observer = new IntersectionObserver(handleObserver, option);
 
-    if (currentlyObservedElement) {
-      observer.observe(currentlyObservedElement);
-      return () => observer.unobserve(currentlyObservedElement);
-    }
-  }, [
-    cursorBasedMessages.fetchNextPage,
-    cursorBasedMessages.hasNextPage,
-    handleObserver,
-  ]);
+  //   if (currentlyObservedElement) {
+  //     observer.observe(currentlyObservedElement);
+  //     return () => observer.unobserve(currentlyObservedElement);
+  //   }
+  // }, [
+  //   cursorBasedMessages.fetchNextPage,
+  //   cursorBasedMessages.hasNextPage,
+  //   handleObserver,
+  // ]);
 
   if (cursorBasedMessages.isLoading || cursorBasedMessages.error) {
     return (
@@ -193,37 +170,8 @@ const Messages = () => {
             </p>
           </div>
         )}
+
         {cursorBasedMessages.data?.pages &&
-          cursorBasedMessages.data.pages[-1]?.messages.map((message, index) => {
-            const macroTimestamp = getTimestamp(page.messages, index);
-
-            return (
-              <MessageModule
-                scrollToBottom={scrollToBottom}
-                key={`${index} ${message.id}`}
-                cursorBasedMessagesConfig={cursorBasedMessagesConfig}
-                message={message}
-                timestamp={macroTimestamp}
-              />
-            );
-          })}
-
-        {queryPages?.pages &&
-          queryPages.pages.map((page) => {
-            page.messages.map((message, index) => {
-              const macroTimestamp = getTimestamp(page.messages, index);
-              return (
-                <MessageModule
-                  scrollToBottom={scrollToBottom}
-                  key={`${index} ${message.id}`}
-                  cursorBasedMessagesConfig={cursorBasedMessagesConfig}
-                  message={message}
-                  timestamp={macroTimestamp}
-                />
-              );
-            });
-          })}
-        {/* {cursorBasedMessages.data?.pages &&
           cursorBasedMessages.data?.pages.map((page) =>
             page.messages.map((message, index) => {
               const macroTimestamp = getTimestamp(page.messages, index);
@@ -237,7 +185,7 @@ const Messages = () => {
                 />
               );
             })
-          )} */}
+          )}
 
         {/* Dummy divs that gives us locations to scroll to . I elected to use id instead of class here since I'm using 
         tailwind for styling and I wanted to label these divs at a glance */}
