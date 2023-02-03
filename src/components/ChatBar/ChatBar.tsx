@@ -7,8 +7,15 @@ import "react-toastify/dist/ReactToastify.css";
 import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
+import { InfiniteData } from "@tanstack/react-query";
+import { Message } from "@prisma/client";
 
-const ChatBar = () => {
+interface ChatBarProps {
+  cursorBasedMessagesConfig: {
+    limit: number;
+  };
+}
+const ChatBar = ({ cursorBasedMessagesConfig }: ChatBarProps) => {
   const [textInput, setTextInput] = useState<string>("");
   const [file, setFile] = useState<File>();
   const renderToast = (toastMessage: string) => toast(toastMessage);
@@ -17,55 +24,41 @@ const ChatBar = () => {
 
   const sendMessageMutation = api.msg.add.useMutation({
     onMutate: async (data) => {
-      // await utils.msg.list.cancel();
-      await utils.msg.cursorBasedList.cancel();
-      const allMessages = utils.msg.cursorBasedList.getInfiniteData(
-        {
-          limit: 15,
+      await utils.msg.list.cancel();
+      const cachedData = utils.msg.list.getInfiniteData({
+        limit: cursorBasedMessagesConfig.limit,
+      });
+
+      const updatedMessageArray = cachedData?.pages.map((page) => {
+        let messageArray = [];
+        messageArray = page.messages;
+        messageArray.push({ messageText: data.messageText });
+
+        return messageArray;
+      });
+
+      const updatedMessages = cachedData?.pages.map(() => {
+        return { messages: updatedMessageArray };
+      });
+      const updatedData: InfiniteData<{
+        pages: {
+          messages: Message[];
+          nextCursor: string | undefined;
+        }[];
+        pageParams: unknown[];
+      }> = {
+        pages: updatedMessages,
+        pageParams: cachedData?.pageParams,
+      };
+
+      utils.msg.list.setInfiniteData(
+        { limit: cursorBasedMessagesConfig.limit },
+        (data) => {
+          return updatedData;
         }
-        // {
-        //   getNextPageParam: (lastPage) => lastPage.nextCursor,
-        //   // initialCursor: 1,
-        // }
       );
 
-      // getData gets cached data so this is key for our Optimistic updates together with setData()
-      const cachedData = utils.msg.list.getData();
-
-      if (cachedData) {
-        //  Upon doing research, this typing issue is caused by Prisma's model generation, where optional Params don't get detected in typescript as being optional.
-        //  Please see the model currently in use for Message:
-
-        //   model Message {
-        //     id String @id @default(auto()) @map("_id") @db.ObjectId
-        //     image String?
-        //     messageText String?
-        //     hasImage Boolean?
-        //     createdAt DateTime? @default(now()) @db.Timestamp()
-        //     myCursor Int? @unique
-        //     @@index([createdAt])
-        // }
-
-        // This still kicks the type errors below when we try to set Data on our Message model, despite id being the only compulsory param. Therefore, I'm treating
-        // this error as a false flag. It doesn't break linting rules, and the functionality works so I'm electing to keep my implementation as is.
-        // I'll remove the @ts-ignore lines however.
-
-        // UPDATE: I have to place back the @ts-ignore lines to allow the build since I don't want to do a codebase-wide rule in our tsconfig as this is dangerous
-        // enough as is
-
-        utils.msg.list.setData(undefined, [
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          ...cachedData,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          {
-            messageText: data.messageText,
-          },
-        ]);
-      }
-
-      return { cachedData, allMessages };
+      return { cachedData };
     },
 
     onSuccess: async (signedUrl) => {
@@ -88,12 +81,16 @@ const ChatBar = () => {
       return;
     },
 
-    onError: (error, _variables, ctx) => {
-      utils.msg.list.setData(undefined, ctx?.cachedData);
+    onError: (error) => {
+      const cachedData = utils.msg.list.getInfiniteData();
+
+      utils.msg.list.setInfiniteData({}, cachedData);
+
       if (error) {
         renderToast(error.message);
       }
     },
+
     onSettled: async () => {
       await utils.msg.invalidate();
     },
