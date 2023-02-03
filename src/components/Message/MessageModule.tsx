@@ -9,7 +9,6 @@ import ImageBox from "./ImageBox";
 import MessageTimeStamp from "./MessageTimeStamp";
 
 import { api } from "../../utils/api";
-import { InfiniteData } from "@tanstack/react-query";
 
 interface MessageModuleProps {
   message: Message;
@@ -83,9 +82,6 @@ const MessageModule = ({
     });
     return;
   };
-  useEffect(() => {
-    scrollToBottom();
-  }, []);
 
   return (
     <div
