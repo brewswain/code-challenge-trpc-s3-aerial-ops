@@ -20,7 +20,7 @@ const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
 
     switch (true) {
       case timeSinceLastMessage === 0:
-        setTimeStamp("sent just now");
+        setTimeStamp("Sent just now");
         break;
       case timeSinceLastMessage === 1:
         setTimeStamp("1 minute ago");
@@ -48,7 +48,9 @@ const MessageTimeStamp = ({ createdAt }: MessageTimeStampProps) => {
 
   return (
     <div>
-      <p className="text-xs text-slate-400">{timeStamp}</p>
+      <p className={`text-xs text-slate-400`}>
+        {timeStamp ? timeStamp : "Sent just now"}
+      </p>
     </div>
   );
 };
