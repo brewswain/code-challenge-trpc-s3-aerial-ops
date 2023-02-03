@@ -7,8 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
-import { InfiniteData } from "@tanstack/react-query";
-import { Message } from "@prisma/client";
+import type { InfiniteData } from "@tanstack/react-query";
+import type { Message } from "@prisma/client";
+import moment from "moment";
 
 interface ChatBarProps {
   cursorBasedMessagesConfig: {
@@ -29,31 +30,41 @@ const ChatBar = ({ cursorBasedMessagesConfig }: ChatBarProps) => {
         limit: cursorBasedMessagesConfig.limit,
       });
 
-      const updatedMessageArray = cachedData?.pages.map((page) => {
+      cachedData?.pages.map((page) => {
         let messageArray = [];
         messageArray = page.messages;
-        messageArray.push({ messageText: data.messageText });
+        messageArray.push({
+          messageText: data.messageText,
+          id: "",
+          image: null,
+          hasImage: null,
+          createdAt: moment().toDate(),
+          myCursor: null,
+        });
 
         return messageArray;
       });
 
-      const updatedMessages = cachedData?.pages.map(() => {
-        return { messages: updatedMessageArray };
-      });
-      const updatedData: InfiniteData<{
-        pages: {
-          messages: Message[];
-          nextCursor: string | undefined;
-        }[];
-        pageParams: unknown[];
-      }> = {
+      const updatedMessages = cachedData?.pages.map((page) => ({
+        messages: page.messages.map((message) => message),
+        nextCursor: page.nextCursor,
+      }));
+
+      const updatedData = {
         pages: updatedMessages,
-        pageParams: cachedData?.pageParams,
+        pageParams: cachedData!.pageParams,
       };
 
       utils.msg.list.setInfiniteData(
         { limit: cursorBasedMessagesConfig.limit },
-        (data) => {
+        // This type error is caused by the data apparently being one level too high for it--it wants `messages`
+        // and `nextCursor`, but my data type converts it beforehand. Also, when I do the recommended format as
+        // demonstrated by the docs, updates are no longer optimistic. TLDR: This file and ChatBar has a couple
+        // ts-ignores tossed in:
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        () => {
           return updatedData;
         }
       );

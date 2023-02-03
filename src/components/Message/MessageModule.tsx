@@ -42,19 +42,17 @@ const MessageModule = ({
         nextCursor: page.nextCursor,
       }));
 
-      const filteredData: InfiniteData<{
-        pages: {
-          messages: Message[];
-          nextCursor: string | undefined;
-        }[];
-        pageParams: unknown[];
-      }> = {
+      const filteredData = {
         pages: filteredMessages,
-        pageParams: cachedData?.pageParams,
+        pageParams: cachedData!.pageParams,
       };
 
       utils.msg.list.setInfiniteData(
         { limit: cursorBasedMessagesConfig.limit },
+
+        // See ChatBar.tsx ln 60 for my justification of using ts-ignore. Maybe some DTOs if I had more time
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         () => {
           return filteredData;
         }
