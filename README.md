@@ -22,7 +22,7 @@
 
 - [ ] A jest test to ensure that pagination is working properly with a badge on the README to indicate status
 
-  [Test Pagination](https://github.com/brewswain/code-challenge-trpc-s3-aerial-ops/actions/workflows/test-pagination.yaml/badge.svg)
+  ![Test Pagination](https://github.com/brewswain/code-challenge-trpc-s3-aerial-ops/actions/workflows/test-pagination.yaml/badge.svg)
 
 ## Fixes
 
