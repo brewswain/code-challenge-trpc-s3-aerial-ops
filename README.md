@@ -22,6 +22,7 @@
 - [ ] A jest test to ensure that pagination is working properly with a badge on the README to indicate status.
 
 - [ ] implement [Mantine](https://mantine.dev/) for component library stuff (Might retrofit once I get base functionality down, this is lower priority since I have to learn TRPC and Zod first.)
+      ![Test Pagination](https://github.com/brewswain/code-challenge-trpc-s3-aerial-ops/actions/workflows/test-pagination/badge.svg)
 
 ## Fixes
 
