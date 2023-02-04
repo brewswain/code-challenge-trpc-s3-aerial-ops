@@ -10,6 +10,7 @@ import { api } from "../../utils/api";
 import type { InfiniteData } from "@tanstack/react-query";
 import type { Message } from "@prisma/client";
 import moment from "moment";
+import { clearConfigCache } from "prettier";
 
 interface ChatBarProps {
   cursorBasedMessagesConfig: {
@@ -30,28 +31,27 @@ const ChatBar = ({ cursorBasedMessagesConfig }: ChatBarProps) => {
         limit: cursorBasedMessagesConfig.limit,
       });
 
-      cachedData?.pages.map((page) => {
-        let messageArray = [];
-        messageArray = page.messages;
-        messageArray.push({
-          messageText: data.messageText,
-          id: "",
-          image: null,
-          hasImage: null,
-          createdAt: moment().toDate(),
-          myCursor: null,
-        });
+      const newMessage = {
+        messageText: data.messageText,
+        id: "",
+        image: null,
+        hasImage: null,
+        createdAt: moment().toDate(),
+        myCursor: null,
+      };
+      const newMessageArray = cachedData?.pages.map((page) => {
+        const messageArray = newMessage;
 
         return messageArray;
       });
 
-      const updatedMessages = cachedData?.pages.map((page) => ({
-        messages: page.messages.map((message) => message),
+      const messages = cachedData?.pages.map((page) => ({
+        messages: newMessageArray,
         nextCursor: page.nextCursor,
       }));
 
       const updatedData = {
-        pages: updatedMessages,
+        pages: messages,
         pageParams: cachedData!.pageParams,
       };
 

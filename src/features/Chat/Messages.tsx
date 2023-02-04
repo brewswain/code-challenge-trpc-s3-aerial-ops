@@ -171,9 +171,9 @@ const Messages = () => {
           </div>
         )}
 
-        {cursorBasedMessages.data?.pages &&
-          cursorBasedMessages.data?.pages.map((page) =>
-            page.messages.map((message, index) => {
+        {cursorBasedMessages.data.pages &&
+          cursorBasedMessages.data.pages.map((page) => {
+            return page.messages.map((message, index) => {
               const macroTimestamp = getTimestamp(page.messages, index);
               return (
                 <MessageModule
@@ -184,9 +184,8 @@ const Messages = () => {
                   timestamp={macroTimestamp}
                 />
               );
-            })
-          )}
-
+            });
+          })}
         {/* Dummy divs that gives us locations to scroll to . I elected to use id instead of class here since I'm using 
         tailwind for styling and I wanted to label these divs at a glance */}
         <div id="scroll__infinite-scroll-point" ref={nextMessagesObserverRef} />
