@@ -1,0 +1,11 @@
+name: test-pagination
+run-name: ${{ github.actor }} is testing Cursor based pagination!
+on: [push]
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install jest
+      - run: npm test
