@@ -7,10 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import UploadImageButton from "./UploadImageButton";
 
 import { api } from "../../utils/api";
-import type { InfiniteData } from "@tanstack/react-query";
-import type { Message } from "@prisma/client";
 import moment from "moment";
-import { clearConfigCache } from "prettier";
 
 interface ChatBarProps {
   cursorBasedMessagesConfig: {
@@ -39,19 +36,19 @@ const ChatBar = ({ cursorBasedMessagesConfig }: ChatBarProps) => {
         createdAt: moment().toDate(),
         myCursor: null,
       };
-      const newMessageArray = cachedData?.pages.map((page) => {
-        const messageArray = newMessage;
 
-        return messageArray;
+      const newMessageArray = cachedData?.pages.map((page, index) => {
+        if (index === cachedData.pages.length - 1) {
+          return {
+            messages: [...page.messages, newMessage],
+            nextCursor: page.nextCursor,
+          };
+        }
+        return page;
       });
 
-      const messages = cachedData?.pages.map((page) => ({
-        messages: newMessageArray,
-        nextCursor: page.nextCursor,
-      }));
-
       const updatedData = {
-        pages: messages,
+        pages: newMessageArray,
         pageParams: cachedData!.pageParams,
       };
 
@@ -64,12 +61,19 @@ const ChatBar = ({ cursorBasedMessagesConfig }: ChatBarProps) => {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        () => {
+        (cachedData) => {
+          if (!cachedData) {
+            return {
+              pages: [],
+              pageParams: [],
+            };
+          }
+
           return updatedData;
         }
       );
 
-      return { cachedData };
+      return cachedData;
     },
 
     onSuccess: async (signedUrl) => {
